@@ -19,6 +19,7 @@ public class DWGraph_DS implements directed_weighted_graph {
             _src = src;
             _dest = dest;
             _weight = w;
+            // maybe we should reset tag = 0 && info = ""
         }
 
         @Override
@@ -62,10 +63,10 @@ public class DWGraph_DS implements directed_weighted_graph {
         }
         @Override
         public boolean equals(Object obj) {
-            if(obj == null) return false;
+            if(obj == null) {return false;}
             edge_data other = (edge_data)obj;
-            if(_src == other.getSrc() && _dest == other.getDest() && _weight == other.getWeight())
-                return true;
+            if(_src == other.getSrc() && _dest == other.getDest() && _weight == other.getWeight()){
+                return true;}
             return false;
         }
         
@@ -90,21 +91,22 @@ public class DWGraph_DS implements directed_weighted_graph {
 
     @Override
     public edge_data getEdge(int src, int dest) {
-        if(!_out.containsKey(src)) return null;
+        if(!_out.containsKey(src)) {return null;}
         return _out.get(src).get(dest);
     }
 
     @Override
     public void addNode(node_data n) {
-        int nkey = n.getKey();
-        if(_v.put(nkey, n) == null) _MC++;
+        int nKey = n.getKey();
+        if(_v.put(nKey, n) == null) {_MC++;} // it should be if != null...?
 
     }
 
     @Override
     public void connect(int src, int dest, double w) {
-        if(src == dest || this.getNode(src) == null || this.getNode(dest) == null)
-            return;
+        if(src == dest || this.getNode(src) == null || this.getNode(dest) == null){
+        return;}
+
         edge_data d = new EdgeData(src, dest, w);
         if(!_out.containsKey(src)){
             _out.put(src, new HashMap<Integer, edge_data>());
@@ -137,16 +139,16 @@ public class DWGraph_DS implements directed_weighted_graph {
             _in.remove(key);
         }
         node_data removed = _v.remove(key);
-        if(removed != null)
-            _MC++;
+        if(removed != null){
+            _MC++;}
         return removed;
     }
 
     @Override
     public edge_data removeEdge(int src, int dest) {
         edge_data removed = _out.get(src).remove(dest);
-        if(removed != null)
-            _MC++;
+        if(removed != null){
+            _MC++;}
         _in.remove(dest);
         return removed;
     }

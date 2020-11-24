@@ -1,10 +1,11 @@
 package api;
 
-public class NodeData implements node_data{
+public class NodeData implements node_data {
 
     private int _key, _tag;
     private String _info;
     private double _weight;
+    private geo_location g;
 
     public NodeData(int key) {
         _key = key;
@@ -17,14 +18,15 @@ public class NodeData implements node_data{
 
     @Override
     public geo_location getLocation() {
-        // TODO Auto-generated method stub
+        if (g != null) {
+            return g;
+        }
         return null;
     }
 
     @Override
     public void setLocation(geo_location p) {
-        // TODO Auto-generated method stub
-
+        this.g = p;
     }
 
     @Override
@@ -56,7 +58,7 @@ public class NodeData implements node_data{
     public void setTag(int t) {
         _tag = t;
     }
-    
+
     @Override
     public int hashCode() {
         return Integer.hashCode(_key);
