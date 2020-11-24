@@ -11,7 +11,14 @@ public class NodeData implements node_data {
         _key = key;
     }
 
-    @Override
+    public NodeData(node_data n) {
+        _key = n.getKey();
+        _info = n.getInfo();
+        _tag = n.getTag();
+        _weight = n.getWeight();
+	}
+
+	@Override
     public int getKey() {
         return _key;
     }
