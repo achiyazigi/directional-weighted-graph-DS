@@ -40,43 +40,36 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     @Override
     public double shortestPathDist(int src, int dest) {
         this.reset();
-        node_data cur = _g.getNode(src);
         node_data destination = _g.getNode(dest);
-        cur.setWeight(0);
-        node_data minNode = null;
-        while(destination.getTag() == -1){
+        _g.getNode(src).setWeight(0);
+        PriorityQueue<NodeData> q = new PriorityQueue<>();
+        q.add((NodeData)_g.getNode(src));
+        while(!q.isEmpty()){
+            node_data cur = q.poll();
             int curkey = cur.getKey();
-            double min = Double.MAX_VALUE;
-            // boolean flag = false;
             for (edge_data d : _g.getE(curkey)) {
-                node_data ni = _g.getNode(d.getDest());
-                if(ni.getTag() == -1){
-                    double distance = d.getWeight() + cur.getWeight();
-                    if(ni.getWeight() > distance){
-                        ni.setWeight(distance);
-                    }
-                    if(min > ni.getWeight()){
-                        min = ni.getWeight();
-                        minNode = ni;
+                NodeData ni = (NodeData)_g.getNode(d.getDest());
+                double distance = d.getWeight() + cur.getWeight();
+                if(ni.getWeight() > distance){
+                    ni.setWeight(distance);
+                    ni.setInfo(""+curkey);
+                    if(!q.contains(ni)){
+                        q.add(ni);
                     }
                 }
+                
             }
-
-            cur.setTag(0);
-            if(minNode == cur && curkey != dest)
-                return -1;
-            if(curkey != dest)
-                minNode.setInfo(""+curkey);
-            cur = minNode;
-
         }
-        return destination.getWeight();
+        if(destination.getWeight()< Double.MAX_VALUE){
+            return destination.getWeight();
+        }
+        return -1;
     }
 
     private void reset() {
         for (node_data n : _g.getV()) {
             n.setWeight(Double.MAX_VALUE);
-            n.setTag(-1);
+            n.setInfo("");
         }
     }
 

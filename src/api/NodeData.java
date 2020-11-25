@@ -1,6 +1,6 @@
 package api;
 
-public class NodeData implements node_data {
+public class NodeData implements node_data, Comparable {
 
     private int _key, _tag;
     private String _info;
@@ -69,5 +69,11 @@ public class NodeData implements node_data {
     @Override
     public int hashCode() {
         return Integer.hashCode(_key);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        NodeData n = (NodeData)o;
+        return (int)(_weight-n._weight);
     }
 }
