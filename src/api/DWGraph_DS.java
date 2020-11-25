@@ -55,7 +55,8 @@ public class DWGraph_DS implements directed_weighted_graph {
     @Override
     public void connect(int src, int dest, double w) {
         if(src == dest || this.getNode(src) == null || this.getNode(dest) == null){
-        return;}
+            return;
+        }
 
         edge_data d = new EdgeData(src, dest, w);
         if(!_out.containsKey(src)){
@@ -65,8 +66,9 @@ public class DWGraph_DS implements directed_weighted_graph {
             _in.put(dest, new HashSet<>());
         }
         _out.get(src).put(dest, d);
-        if(_in.get(dest).add(src))
+        if(_in.get(dest).add(src)){
             _edges ++;
+        }
         _MC++;
     }
 
@@ -105,9 +107,10 @@ public class DWGraph_DS implements directed_weighted_graph {
     @Override
     public edge_data removeEdge(int src, int dest) {
         edge_data removed = _out.get(src).remove(dest);
-        if(removed != null)
-            _edges --;
+        if(removed != null) {
+            _edges--;
             _MC++;
+        }
         _in.remove(dest);
         return removed;
     }
