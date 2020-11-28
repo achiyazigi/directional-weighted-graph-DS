@@ -106,6 +106,9 @@ public class DWGraph_DS implements directed_weighted_graph {
 
     @Override
     public edge_data removeEdge(int src, int dest) {
+        if (!_v.containsKey(src) || !_v.containsKey(dest)){
+            return null;
+        }
         edge_data removed = _out.get(src).remove(dest);
         if(removed != null) {
             _edges--;

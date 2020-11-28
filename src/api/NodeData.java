@@ -16,6 +16,7 @@ public class NodeData implements node_data, Comparable {
         _info = n.getInfo();
         _tag = n.getTag();
         _weight = n.getWeight();
+        g = n.getLocation();
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 import api.*;
 
-import org.junit.Test;
+//import org.junit.Test;
+import org.junit.jupiter.api.Test;
 // import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -545,5 +546,34 @@ public class test_DWGraph_Algo {
         dw_graph_algorithms ga = new DWGraph_Algo();
         ga.init(g0);
         assertEquals(g0, ga.getGraph());
+    }
+
+    @Test
+    public void isConnectedBasic(){
+
+        directed_weighted_graph G = graphBilter();
+        dw_graph_algorithms g1 = new DWGraph_Algo();
+        g1.init(G);
+         if(!g1.isConnected()){
+            fail();
+        };
+        g1.getGraph().removeEdge(234, 235);
+         if(g1.isConnected()){
+             fail();
+         }
+    }
+    public static DWGraph_DS graphBilter() {
+        DWGraph_DS g = new DWGraph_DS();
+
+        for (int i = 0; i < 1000000; i++) {
+            g.addNode(new NodeData(i));
+        }
+        for (int i = 0; i < 1000000; i++) {
+            g.connect(i, i + 1, 6);
+        }
+//        for (int i = 0; i < 1000000; i ++) {
+//            g.connect(i, i + 2, i);
+//        }
+        return g;
     }
 }
