@@ -467,7 +467,9 @@ assertEquals(1.3118716362419698,ga.getGraph().getEdge(0,16).getWeight());
             int v = nextRnd(0, 100);
             for (int j = 1; j < v; j++) {
                 g0.addNode(new NodeData(j));
-                g0.connect(nextRnd(0, j-1), j, j);
+                int localrnd = nextRnd(0, j-1);
+                g0.connect(localrnd, j, j);
+                g0.connect(j, localrnd, j);
             }
             ga.init(g0);
             if(!ga.isConnected()){
@@ -488,7 +490,9 @@ assertEquals(1.3118716362419698,ga.getGraph().getEdge(0,16).getWeight());
             int v = nextRnd(2, 100);
             for (int j = 1; j < v/2; j++) {
                 g0.addNode(new NodeData(j));
-                g0.connect(nextRnd(0, j-1), j, j);
+                int localrnd = nextRnd(0, j-1);
+                g0.connect(localrnd, j, j);
+                g0.connect(j, localrnd, j);
             }
             g0.addNode(new NodeData(v/2));
             for (int j = v/2+1; j < v; j++) {
@@ -601,10 +605,10 @@ assertEquals(1.3118716362419698,ga.getGraph().getEdge(0,16).getWeight());
     public static DWGraph_DS graphBilter() {
         DWGraph_DS g = new DWGraph_DS();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100000; i++) {
             g.addNode(new NodeData(i));
         }
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100000; i++) {
             g.connect(i, i + 1, 6.8);
             g.connect(i+1, i,4.9);
         }
