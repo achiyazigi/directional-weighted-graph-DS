@@ -416,6 +416,8 @@ public class test_DWGraph_Algo {
         g0.addNode(new NodeData(0));
         g0.addNode(new NodeData(100));
         g0.connect(100, 0, 77.999998);
+        g0.connect(0, 100, 77.999998); // I add this connect to make the graph be connected.
+
         dw_graph_algorithms ga = new DWGraph_Algo();
         ga.init(g0);
         assertEquals(true, ga.isConnected());
@@ -565,11 +567,12 @@ public class test_DWGraph_Algo {
     public static DWGraph_DS graphBilter() {
         DWGraph_DS g = new DWGraph_DS();
 
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 1000; i++) {
             g.addNode(new NodeData(i));
         }
-        for (int i = 0; i < 1000000; i++) {
-            g.connect(i, i + 1, 6);
+        for (int i = 0; i < 1000; i++) {
+            g.connect(i, i + 1, 6.8);
+            g.connect(i+1, i,4.9);
         }
 //        for (int i = 0; i < 1000000; i ++) {
 //            g.connect(i, i + 2, i);

@@ -31,30 +31,32 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         if (this._g.nodeSize() > this._g.edgeSize() + 1) { //the minimum number of edges for a connected graph, shallow chek.
             return false;
         }
-        reset_and_lonely_check();
-//       if (reset_and_lonely_check()){//reset all the Tags in the graph to 0.
-//           return false;
-//       }
-
-
-        node_data startPoint = (_g.getV().iterator().next()); // get a random Node in the graph.
-        Queue<node_data> q = new LinkedList<>(); // Queue to store all the checked Nodes.
-        q.add(startPoint);
-
-        while (!q.isEmpty()) {
-            node_data cur = q.poll();
-            for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
-                if (_g.getNode(i.getDest()).getTag() == 0) {
-                    q.add(_g.getNode(i.getDest())); // if not, add him to the Queue.
-                    _g.getNode(i.getDest()).setTag(1);    //mark 1 - In the queue but not checked yet.
-                }
-            }
-            cur.setTag(2);  // mark 2- done to check this node.
+        if (reset_and_lonely_check()) {//reset all the Tags in the graph to 0 and check if there is a lonely node.
+            return false;            // if there is a lonely node return false immediately.
         }
 
-        LinkedList<node_data> checklist = new LinkedList<>(_g.getV()); //List of all the graph nodes.
-        for (node_data i : checklist) { // check if there is a node who doesn't marked with 2.
-            if (i.getTag() != 2) return false;
+        Queue<node_data> list = new LinkedList<>(_g.getV()); //List of all the graph nodes.
+        Queue<node_data> q = new LinkedList<>(); // Queue to store all the checked Nodes.
+
+
+        while (!list.isEmpty()) {
+            node_data startPoint = list.poll(); // get the next node in the Queue and check him.
+            q.add(startPoint);
+            while (!q.isEmpty()) {
+                node_data cur = q.poll();
+                for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
+                    if (_g.getNode(i.getDest()).getTag() == 0) {
+                        q.add(_g.getNode(i.getDest())); // if not, add him to the Queue.
+                        _g.getNode(i.getDest()).setTag(1);    //mark 1 - In the queue but not checked yet.
+                    }
+                }
+                cur.setTag(2);  // mark 2- done to check this node.
+            }
+
+            LinkedList<node_data> checklist = new LinkedList<>(_g.getV()); //List of all the graph nodes.
+            for (node_data i : checklist) { // check if there is a node who doesn't marked with 2.
+                if (i.getTag() != 2) return false;
+            }
         }
         return true;
 
@@ -104,14 +106,15 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             n.setInfo("");
         }
     }
-    private void reset_and_lonely_check() {
+
+    private boolean reset_and_lonely_check() {
         for (node_data n : _g.getV()) {
             n.setTag(0);
-//            if (_g.getE(n.getKey()).size() == 0) { //check if there is a lonely node --> false
-//                return true;
-//            }
+            if (_g.getE(n.getKey()).size() == 0) { //check if there is a lonely node --> false
+                return true;
+            }
         }
-//        return false;
+        return false;
     }
 
     @Override
