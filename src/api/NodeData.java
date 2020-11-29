@@ -2,7 +2,7 @@ package api;
 
 public class NodeData implements node_data, Comparable {
 
-    private int _key, _tag;
+    private int _key, _tag = -1;
     private String _info;
     private double _weight;
     private geo_location g;

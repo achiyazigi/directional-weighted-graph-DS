@@ -56,12 +56,14 @@ public class test_DWGraph_Algo {
             cur.setTag(0);
             Iterator<edge_data> i = ni.iterator();
             edge_data tmp = i.next();
-            while(i.hasNext() && tmp.getTag() == 0)
+            node_data next =  g.getNode(tmp.getDest());
+            while(i.hasNext() && next.getTag() == 0){
                 tmp = i.next();
-            // if(tmp == null) System.out.println("+");
-            if(tmp.getTag() == 0) return res;
-            g.connect(cur.getKey(), tmp.getDest(), nextRnd(0.0, 0.1));
-            cur = g.getNode(tmp.getDest());
+                next =  g.getNode(tmp.getDest());
+            }
+            if(next.getTag() == 0) return res;
+            g.connect(cur.getKey(), next.getKey(), nextRnd(0.0, 0.1));
+            cur = next;
             res.add(cur);
             ni = g.getE(cur.getKey());
         }
@@ -220,6 +222,30 @@ public class test_DWGraph_Algo {
                 fail();
             }
         }
+    }
+
+
+    @Test
+    public void SP_dead_end() {
+        directed_weighted_graph g0 = new DWGraph_DS();
+        for (int i = 0; i < 10; i++) {
+            g0.addNode(new NodeData(i));
+        }
+        g0.connect(0, 1, 1);
+        g0.connect(0, 2, 10);
+        g0.connect(0, 3, 10);
+        g0.connect(2, 4, 10);
+        g0.connect(4, 5, 10);
+        dw_graph_algorithms ga = new DWGraph_Algo();
+        ga.init(g0);
+        List<node_data> SP = ga.shortestPath(0, 5);
+        int[] expected = { 0, 2, 4, 5 };
+        boolean b = true;
+        int i = 0;
+        for (node_data n : SP) {
+            b &= n.getKey() == expected[i++];
+        }
+        assertEquals(true, b);
     }
 
     @Test
