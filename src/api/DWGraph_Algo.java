@@ -2,12 +2,7 @@ package api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import java.io.*;
-import java.lang.reflect.Array;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -30,7 +25,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     }
 
     @Override
-public boolean isConnected() {
+    public boolean isConnected() {
 
 
     if (_g.nodeSize() == 0 || _g.nodeSize() == 1) {
@@ -54,30 +49,51 @@ public boolean isConnected() {
         for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
             node_data dest = _g.getNode(i.getDest());
             if (dest.getTag() == -1) {
-                if(!path(dest.getKey(),cur.getKey()))
+                if(!path(dest.getKey(),cur.getKey())){
                     return false;
+                }
                 q.add(dest);
             }
         }
     }
     return _g.getV().size() == counter;
-
 }
 
-    /**
-     * 1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
-     * 2. Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes. Set the initial node as current.
-     * 3. For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one. For example, if the current node A is marked with a distance of 6, and the edge connecting it with a neighbour B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
-     * 4. When we are done considering all of the unvisited neighbours of the current node, mark the current node as visited and remove it from the unvisited set. A visited node will never be checked again.
-     * 5. If the destination node has been marked visited (when planning a route between two specific nodes) or if the smallest tentative distance among the nodes in the unvisited set is infinity (when planning a complete traversal; occurs when there is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
-     * 6. Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new "current node", and go back to step 3.
-     */
+    private boolean path(int src, int dest) {
+        node_data cur = _g.getNode(src);
+        Stack<node_data> s = new Stack<>();
+        HashSet<Integer> visited = new HashSet<>();
+        visited.add(src);
+        s.add(cur);
+        while(!s.empty()){
+            cur = s.pop();
+            for(edge_data d: _g.getE(cur.getKey())){
+                node_data next = _g.getNode(d.getDest());
+                if(!visited.contains(next.getKey())){
+                    visited.add(next.getKey());
+                    s.add(next);
+                }
+                if(next.getKey() == dest)
+                    return true;
+            }
+        }
+        return false;
+    }
 
-    @Override
-    public double shortestPathDist(int src, int dest) {
-        this.reset();
-        node_data destination = _g.getNode(dest);
-        _g.getNode(src).setWeight(0);
+/**
+ * 1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
+ * 2. Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes. Set the initial node as current.
+ * 3. For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one. For example, if the current node A is marked with a distance of 6, and the edge connecting it with a neighbour B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
+ * 4. When we are done considering all of the unvisited neighbours of the current node, mark the current node as visited and remove it from the unvisited set. A visited node will never be checked again.
+ * 5. If the destination node has been marked visited (when planning a route between two specific nodes) or if the smallest tentative distance among the nodes in the unvisited set is infinity (when planning a complete traversal; occurs when there is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
+ * 6. Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new "current node", and go back to step 3.
+ */
+
+@Override
+public double shortestPathDist(int src, int dest) {
+    this.reset();
+    node_data destination = _g.getNode(dest);
+    _g.getNode(src).setWeight(0);
         PriorityQueue<NodeData> q = new PriorityQueue<>();
         q.add((NodeData) _g.getNode(src));
         while (!q.isEmpty()) {
@@ -163,7 +179,7 @@ public boolean isConnected() {
             FileReader reader = new FileReader((file));
             _g = gson.fromJson(reader,directed_weighted_graph.class);
 
-       return true;
+         return true;
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -171,67 +187,4 @@ public boolean isConnected() {
         }
     }
 
-    private boolean path(int src, int dest) {
-        node_data cur = _g.getNode(src);
-        Stack<node_data> s = new Stack<>();
-        HashSet<Integer> visited = new HashSet<>();
-visited.add(src);
-        s.add(cur);
-        while(!s.empty()){
-            cur = s.pop();
-            for(edge_data d: _g.getE(cur.getKey())){
-                node_data next = _g.getNode(d.getDest());
-                if(!visited.contains(next.getKey())){
-                    visited.add(next.getKey());
-                    s.add(next);
-                }
-                if(next.getKey() == dest)
-                    return true;
-            }
-        }
-        return false;
-    }
-
-//    public boolean isConnected2() {
-//
-//
-//        if (_g.nodeSize() == 0 || _g.nodeSize() == 1) {
-//            return true;
-//        }
-//        if (this._g.nodeSize() > this._g.edgeSize() + 1) { //the minimum number of edges for a connected graph, shallow chek.
-//            return false;
-//        }
-//        if (reset_and_lonely_check()) {//reset all the Tags in the graph to 0 and check if there is a lonely node.
-//            return false;            // if there is a lonely node return false immediately.
-//        }
-//
-////        Queue<node_data> list = (Queue<node_data>) _g.getV(); //List of all the graph nodes.
-//        Queue<node_data> q = new LinkedList<>(); // Queue to store all the checked Nodes.
-////        LinkedList<node_data> checklist = new LinkedList<>(_g.getV()); //List of all the graph nodes.
-//
-//
-//        for ( node_data startPoint: _g.getV()             ) {     // get the next node in the Queue and check him.
-//
-//
-//
-//            q.add(startPoint);
-//            while (!q.isEmpty()) {
-//                node_data cur = q.poll();
-//                for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
-//                    if (_g.getNode(i.getDest()).getTag() == 0) {
-//                        q.add(_g.getNode(i.getDest())); // if not, add him to the Queue.
-//                        _g.getNode(i.getDest()).setTag(1);    //mark 1 - In the queue but not checked yet.
-//                    }
-//                }
-//                cur.setTag(2);  // mark 2- done to check this node.
-//            }
-//
-//            for (node_data i : _g.getV()) { // check if there is a node who doesn't marked with 2.
-//                if (i.getTag() != 2) {return false;}
-//                i.setTag(0);
-//            }
-//        }
-//        return true;
-//
-//    }
 }

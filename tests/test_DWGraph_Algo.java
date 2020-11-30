@@ -1,10 +1,6 @@
 import api.*;
 
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeAll;
-//import org.junit.Test;
 import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -353,7 +349,7 @@ public class test_DWGraph_Algo {
 
     @Test
     public void save_basic() throws IOException {
-        String file_name = System.getProperty("user.dir")+"\\g0";
+        String file_name = System.getProperty("user.dir")+"\\data\\g0";
         directed_weighted_graph g0 = new DWGraph_DS();
         dw_graph_algorithms ga = new DWGraph_Algo();
         ga.init(g0);
@@ -394,7 +390,7 @@ public class test_DWGraph_Algo {
         g0.connect(9, 8, 10); //
         dw_graph_algorithms ga = new DWGraph_Algo();
         ga.init(g0);
-        String file_name = System.getProperty("user.dir")+"\\g0";
+        String file_name = System.getProperty("user.dir")+"\\data\\g0";
         remove_file(file_name);
         ga.save(file_name);
         ga.init(new DWGraph_DS());
