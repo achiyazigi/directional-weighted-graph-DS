@@ -2,14 +2,8 @@ package api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -155,7 +149,7 @@ public boolean isConnected() {
 
         Gson g = new GsonBuilder().create();
 
-         String json = g.toJson(_g);
+        String json = g.toJson(_g);
         return false;
     }
 
@@ -163,6 +157,7 @@ public boolean isConnected() {
     public boolean load(String file) {
 
         try {
+        
             GsonBuilder builder = new GsonBuilder();
             builder.registerTypeAdapter(directed_weighted_graph.class, new JsonGraph() );
             Gson gson = builder.create();
@@ -170,7 +165,7 @@ public boolean isConnected() {
             FileReader reader = new FileReader((file));
             _g = gson.fromJson(reader,directed_weighted_graph.class);
 
-       return true;
+            return true;
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -182,7 +177,7 @@ public boolean isConnected() {
         node_data cur = _g.getNode(src);
         Stack<node_data> s = new Stack<>();
         HashSet<Integer> visited = new HashSet<>();
-visited.add(src);
+        visited.add(src);
         s.add(cur);
         while(!s.empty()){
             cur = s.pop();
