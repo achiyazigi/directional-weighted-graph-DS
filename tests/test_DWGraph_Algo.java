@@ -376,7 +376,15 @@ public class test_DWGraph_Algo {
         b &= g1.getV().size() == 0;
         assertEquals(true, b); 
     }
-
+@Test
+public void load10() throws IOException {
+    directed_weighted_graph g0 = new DWGraph_DS();
+    dw_graph_algorithms ga = new DWGraph_Algo();
+    ga.init(g0);
+    ga.load("C:\\Users\\ravid\\IdeaProjects\\Graph project\\directional-weighted-graph-DS\\data\\A1");
+assertEquals(17, ga.getGraph().nodeSize());
+assertEquals(1.3118716362419698,ga.getGraph().getEdge(0,16).getWeight());
+}
     @Test
     public void load() throws IOException {
         directed_weighted_graph g0 = new DWGraph_DS();

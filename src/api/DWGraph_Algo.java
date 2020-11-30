@@ -1,5 +1,15 @@
 package api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -22,45 +32,39 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     }
 
     @Override
-    public boolean isConnected() {
+public boolean isConnected() {
 
 
-        if (_g.nodeSize() == 0 || _g.nodeSize() == 1) {
-            return true;
-        }
-        if (this._g.nodeSize() > this._g.edgeSize() + 1) { //the minimum number of edges for a connected graph, shallow chek.
-            return false;
-        }
-        if (reset_and_lonely_check()) {//reset all the Tags in the graph to 0 and check if there is a lonely node.
-            return false;            // if there is a lonely node return false immediately.
-        }
-
-        Queue<node_data> list = new LinkedList<>(_g.getV()); //List of all the graph nodes.
-        Queue<node_data> q = new LinkedList<>(); // Queue to store all the checked Nodes.
-
-
-        while (!list.isEmpty()) {
-            node_data startPoint = list.poll(); // get the next node in the Queue and check him.
-            q.add(startPoint);
-            while (!q.isEmpty()) {
-                node_data cur = q.poll();
-                for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
-                    if (_g.getNode(i.getDest()).getTag() == 0) {
-                        q.add(_g.getNode(i.getDest())); // if not, add him to the Queue.
-                        _g.getNode(i.getDest()).setTag(1);    //mark 1 - In the queue but not checked yet.
-                    }
-                }
-                cur.setTag(2);  // mark 2- done to check this node.
-            }
-
-            LinkedList<node_data> checklist = new LinkedList<>(_g.getV()); //List of all the graph nodes.
-            for (node_data i : checklist) { // check if there is a node who doesn't marked with 2.
-                if (i.getTag() != 2) return false;
-            }
-        }
+    if (_g.nodeSize() == 0 || _g.nodeSize() == 1) {
         return true;
-
     }
+    if (this._g.nodeSize() > this._g.edgeSize() + 1) { //the minimum number of edges for a connected graph, shallow chek.
+        return false;
+    }
+    if (reset_and_lonely_check()) {//reset all the Tags in the graph to 0 and check if there is a lonely node.
+        return false;            // if there is a lonely node return false immediately.
+    }
+
+    Queue<node_data> q = new LinkedList<>(); // Queue to store all the checked Nodes.
+    q.add(_g.getV().iterator().next());
+    int counter = 0;
+
+    while (!q.isEmpty()) {
+        node_data cur = q.poll();
+        cur.setTag(0);
+        counter++;
+        for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
+            node_data dest = _g.getNode(i.getDest());
+            if (dest.getTag() == -1) {
+                if(!path(dest.getKey(),cur.getKey()))
+                    return false;
+                q.add(dest);
+            }
+        }
+    }
+    return _g.getV().size() == counter;
+
+}
 
     /**
      * 1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
@@ -109,7 +113,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     private boolean reset_and_lonely_check() {
         for (node_data n : _g.getV()) {
-            n.setTag(0);
+            n.setTag(-1);
             if (_g.getE(n.getKey()).size() == 0) { //check if there is a lonely node --> false
                 return true;
             }
@@ -134,14 +138,97 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public boolean save(String file) {
+
+        Gson g = new GsonBuilder().create();
+
+         String json = g.toJson(_g);
+
+//        Files.write(Paths.get(file, Arrays.asList(_g.getE())));
+
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean load(String file) {
-        // TODO Auto-generated method stub
+
+        try {
+            GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(directed_weighted_graph.class, new JsonGraph() );
+            Gson gson = builder.create();
+
+            FileReader reader = new FileReader((file));
+            _g = gson.fromJson(reader,directed_weighted_graph.class);
+
+       return true;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean path(int src, int dest) {
+        node_data cur = _g.getNode(src);
+        Stack<node_data> s = new Stack<>();
+        HashSet<Integer> visited = new HashSet<>();
+visited.add(src);
+        s.add(cur);
+        while(!s.empty()){
+            cur = s.pop();
+            for(edge_data d: _g.getE(cur.getKey())){
+                node_data next = _g.getNode(d.getDest());
+                if(!visited.contains(next.getKey())){
+                    visited.add(next.getKey());
+                    s.add(next);
+                }
+                if(next.getKey() == dest)
+                    return true;
+            }
+        }
         return false;
     }
 
+//    public boolean isConnected2() {
+//
+//
+//        if (_g.nodeSize() == 0 || _g.nodeSize() == 1) {
+//            return true;
+//        }
+//        if (this._g.nodeSize() > this._g.edgeSize() + 1) { //the minimum number of edges for a connected graph, shallow chek.
+//            return false;
+//        }
+//        if (reset_and_lonely_check()) {//reset all the Tags in the graph to 0 and check if there is a lonely node.
+//            return false;            // if there is a lonely node return false immediately.
+//        }
+//
+////        Queue<node_data> list = (Queue<node_data>) _g.getV(); //List of all the graph nodes.
+//        Queue<node_data> q = new LinkedList<>(); // Queue to store all the checked Nodes.
+////        LinkedList<node_data> checklist = new LinkedList<>(_g.getV()); //List of all the graph nodes.
+//
+//
+//        for ( node_data startPoint: _g.getV()             ) {     // get the next node in the Queue and check him.
+//
+//
+//
+//            q.add(startPoint);
+//            while (!q.isEmpty()) {
+//                node_data cur = q.poll();
+//                for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
+//                    if (_g.getNode(i.getDest()).getTag() == 0) {
+//                        q.add(_g.getNode(i.getDest())); // if not, add him to the Queue.
+//                        _g.getNode(i.getDest()).setTag(1);    //mark 1 - In the queue but not checked yet.
+//                    }
+//                }
+//                cur.setTag(2);  // mark 2- done to check this node.
+//            }
+//
+//            for (node_data i : _g.getV()) { // check if there is a node who doesn't marked with 2.
+//                if (i.getTag() != 2) {return false;}
+//                i.setTag(0);
+//            }
+//        }
+//        return true;
+//
+//    }
 }
