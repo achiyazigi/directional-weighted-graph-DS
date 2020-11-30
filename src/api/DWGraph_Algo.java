@@ -137,7 +137,7 @@ public boolean isConnected() {
     @Override
     public boolean save(String file) {
 
-        Gson g = new GsonBuilder().create();
+        Gson g = new  GsonBuilder().create();
          String json = g.toJson(_g);
 
         try {
