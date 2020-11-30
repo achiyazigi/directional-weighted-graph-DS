@@ -3,9 +3,7 @@ package api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -140,13 +138,18 @@ public boolean isConnected() {
     public boolean save(String file) {
 
         Gson g = new GsonBuilder().create();
-
          String json = g.toJson(_g);
 
-//        Files.write(Paths.get(file, Arrays.asList(_g.getE())));
-
-        // TODO Auto-generated method stub
-        return false;
+        try {
+            PrintWriter pw = new PrintWriter(new File(file));
+            pw.write(json);
+            pw.close();
+            return true;
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
