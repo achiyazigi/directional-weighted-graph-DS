@@ -5,10 +5,11 @@ public class NodeData implements node_data, Comparable {
     private int _key, _tag = -1;
     private String _info;
     private double _weight;
-    private geo_location g;
+    private geo_location _geo;
 
     public NodeData(int key) {
         _key = key;
+        _geo = new GeoLocation(0.0, 0.0, 0.0);
     }
 
     public NodeData(node_data n) {
@@ -16,25 +17,25 @@ public class NodeData implements node_data, Comparable {
         _info = n.getInfo();
         _tag = n.getTag();
         _weight = n.getWeight();
-        g = n.getLocation();
-	}
+        _geo = new GeoLocation(n.getLocation());
+    }
 
-	@Override
+    @Override
     public int getKey() {
         return _key;
     }
 
     @Override
     public geo_location getLocation() {
-        if (g != null) {
-            return g;
+        if (_geo != null) {
+            return _geo;
         }
         return null;
     }
 
     @Override
     public void setLocation(geo_location p) {
-        this.g = p;
+        this._geo = p;
     }
 
     @Override
@@ -74,7 +75,7 @@ public class NodeData implements node_data, Comparable {
 
     @Override
     public int compareTo(Object o) {
-        NodeData n = (NodeData)o;
-        return (int)(_weight-n._weight);
+        NodeData n = (NodeData) o;
+        return (int) (_weight - n._weight);
     }
 }

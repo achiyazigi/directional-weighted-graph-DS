@@ -22,6 +22,7 @@ public class DWGraph_DS implements directed_weighted_graph {
         _v = new HashMap<>();
         _in = new HashMap<>();
         _out = new HashMap<>();
+
         for (node_data n : g.getV()) {
             this.addNode(new NodeData(n));
         }
@@ -132,5 +133,7 @@ public class DWGraph_DS implements directed_weighted_graph {
     public int getMC() {
         return _MC;
     }
-    
+
+
+
 }
