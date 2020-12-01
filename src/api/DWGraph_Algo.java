@@ -26,40 +26,40 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public boolean isConnected() {
+        if (_g.nodeSize() == 0 || _g.nodeSize() == 1) {
+            return true;
+        }
+        if (this._g.nodeSize() > this._g.edgeSize() + 1) { //the minimum number of edges for a connected graph, shallow chek.
+            return false;
+        }
+        if (reset_and_lonely_check()) {//reset all the Tags in the graph to 0 and check if there is a lonely node.
+            return false;            // if there is a lonely node return false immediately.
+        }
 
-
-    if (_g.nodeSize() == 0 || _g.nodeSize() == 1) {
-        return true;
-    }
-    if (this._g.nodeSize() > this._g.edgeSize() + 1) { //the minimum number of edges for a connected graph, shallow chek.
-        return false;
-    }
-    if (reset_and_lonely_check()) {//reset all the Tags in the graph to 0 and check if there is a lonely node.
-        return false;            // if there is a lonely node return false immediately.
-    }
-
-    Queue<node_data> q = new LinkedList<>(); // Queue to store all the checked Nodes.
-    q.add(_g.getV().iterator().next());
-    int counter = 0;
-
-    while (!q.isEmpty()) {
-        node_data cur = q.poll();
+        Queue<node_data> q = new LinkedList<>(); // Queue to store all the checked Nodes.
+        q.add(_g.getV().iterator().next());
+        int counter = 0;
+        node_data cur = q.peek();
         cur.setTag(0);
-        counter++;
-        for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
-            node_data dest = _g.getNode(i.getDest());
-            if (dest.getTag() == -1) {
-                if(!path(dest.getKey(),cur.getKey())){
-                    return false;
+        
+        while (!q.isEmpty()) {
+            cur = q.poll();
+            counter++;
+            for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
+                node_data dest = _g.getNode(i.getDest());
+                if (dest.getTag() == -1) {
+                    if(!path(dest.getKey(),cur.getKey())){
+                        return false;
+                    }
+                    dest.setTag(0);
+                    q.add(dest);
                 }
-                q.add(dest);
             }
         }
+        return _g.getV().size() == counter;
     }
-    return _g.getV().size() == counter;
-}
 
-    private boolean path(int src, int dest) {
+    public boolean path(int src, int dest) {
         node_data cur = _g.getNode(src);
         Stack<node_data> s = new Stack<>();
         HashSet<Integer> visited = new HashSet<>();
@@ -89,11 +89,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
  * 6. Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new "current node", and go back to step 3.
  */
 
-@Override
-public double shortestPathDist(int src, int dest) {
-    this.reset();
-    node_data destination = _g.getNode(dest);
-    _g.getNode(src).setWeight(0);
+    @Override
+    public double shortestPathDist(int src, int dest) {
+        this.reset();
+        node_data destination = _g.getNode(dest);
+        _g.getNode(src).setWeight(0);
         PriorityQueue<NodeData> q = new PriorityQueue<>();
         q.add((NodeData) _g.getNode(src));
         while (!q.isEmpty()) {

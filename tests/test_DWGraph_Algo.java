@@ -31,6 +31,24 @@ public class test_DWGraph_Algo {
         }
         return g;
     }
+    private static directed_weighted_graph connected_graph_creator(int v_size, int seed) {
+        directed_weighted_graph g = new DWGraph_DS();
+        _rnd = new Random(seed);
+        for(int i=0;i<v_size;i++) {
+            
+            g.addNode(new NodeData(i));
+        }
+        for(int i=0;i<v_size-1;i++) {
+
+            g.connect(i, i+1, i);
+            g.connect(i+1, i, i);
+        }
+        for(int i=0;i<v_size;i++) {
+            int key = nextRnd(0, v_size);
+            g.connect(i, key, i);
+        }
+        return g;
+    }
 
     private static int nextRnd(int min, int max) {
         double v = nextRnd(0.0+min, (double)max);
@@ -461,6 +479,34 @@ public class test_DWGraph_Algo {
                 System.out.println(g0);
                 fail();
             }
+        }
+    }
+
+    @Test
+    public void isConnected_recursive() {
+        System.out.println("isconnected_recursive test:");
+        _rnd = new Random();
+        for (int i = 0; i < 10; i++) {
+            directed_weighted_graph g0 = connected_graph_creator(nextRnd(0, 1000), i);
+            DWGraph_Algo ga = new DWGraph_Algo();
+            ga.init(g0);
+            boolean b = ga.isConnected();
+            if(!b)fail();
+            while(b){
+                int src = nextRnd(0, g0.nodeSize());
+                int dest = nextRnd(0, g0.nodeSize());
+                while(null == g0.getEdge(src, dest)){
+                    src = nextRnd(0, g0.nodeSize());
+                    dest = nextRnd(0, g0.nodeSize());
+                }
+                g0.removeEdge(src, dest);
+                b = ga.isConnected();
+                if(ga.path(src, dest) && !b){
+                    System.out.println(g0.getV());
+                    fail();
+                }
+            }
+            System.out.println("    completed graph number "+i);
         }
     }
 
