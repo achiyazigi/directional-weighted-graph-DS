@@ -174,5 +174,14 @@ public class Arena {
 		Range2Range ans = new Range2Range(world, frame);
 		return ans;
 	}
+	public void initAgents(int rs) {
+		for(int a = 0;a<rs;a++) {
+			int ind = a%_pokemons.size();
+			CL_Pokemon c = _pokemons.get(ind);
+			int nn = c.get_edge().getDest();
+			if(c.getType()<0 ) {nn = c.get_edge().getSrc();}
+			_agents.add(new CL_Agent(_gg, nn));
+		}
+	}
 
 }
