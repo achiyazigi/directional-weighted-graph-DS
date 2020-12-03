@@ -4,3 +4,6 @@ directional-weighted-graph-DS.iml
 .vscode/settings.json
 .vscode/workspace.code-workspace
 docs/
+data/g0.json
+src/client.zip
+bash.exe.stackdump

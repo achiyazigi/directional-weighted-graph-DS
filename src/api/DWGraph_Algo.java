@@ -1,7 +1,7 @@
 package api;
-
-import com.google.gson.*;
-
+import Server.Game_Server_Ex2;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.*;
 import java.util.*;
 
@@ -41,14 +41,14 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         int counter = 0;
         node_data cur = q.peek();
         cur.setTag(0);
-
+        
         while (!q.isEmpty()) {
             cur = q.poll();
             counter++;
             for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
                 node_data dest = _g.getNode(i.getDest());
                 if (dest.getTag() == -1) {
-                    if (!path(dest.getKey(), cur.getKey())) {
+                    if(!path(dest.getKey(),cur.getKey())){
                         return false;
                     }
                     dest.setTag(0);
@@ -65,42 +65,49 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         HashSet<Integer> visited = new HashSet<>();
         visited.add(src);
         s.add(cur);
-        while (!s.empty()) {
+        while(!s.empty()){
             cur = s.pop();
-            for (edge_data d : _g.getE(cur.getKey())) {
+            for(edge_data d: _g.getE(cur.getKey())){
                 node_data next = _g.getNode(d.getDest());
-                if (!visited.contains(next.getKey())) {
+                if(!visited.contains(next.getKey())){
                     visited.add(next.getKey());
                     s.add(next);
                 }
-                if (next.getKey() == dest)
+                if(next.getKey() == dest)
                     return true;
             }
         }
         return false;
     }
 
-    /**
-     * 1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
-     * 2. Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes. Set the initial node as current.
-     * 3. For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one. For example, if the current node A is marked with a distance of 6, and the edge connecting it with a neighbour B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
-     * 4. When we are done considering all of the unvisited neighbours of the current node, mark the current node as visited and remove it from the unvisited set. A visited node will never be checked again.
-     * 5. If the destination node has been marked visited (when planning a route between two specific nodes) or if the smallest tentative distance among the nodes in the unvisited set is infinity (when planning a complete traversal; occurs when there is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
-     * 6. Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new "current node", and go back to step 3.
-     */
+/**
+ * 1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
+ * 2. Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes. Set the initial node as current.
+ * 3. For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one. For example, if the current node A is marked with a distance of 6, and the edge connecting it with a neighbour B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
+ * 4. When we are done considering all of the unvisited neighbours of the current node, mark the current node as visited and remove it from the unvisited set. A visited node will never be checked again.
+ * 5. If the destination node has been marked visited (when planning a route between two specific nodes) or if the smallest tentative distance among the nodes in the unvisited set is infinity (when planning a complete traversal; occurs when there is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
+ * 6. Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new "current node", and go back to step 3.
+ */
 
     @Override
     public double shortestPathDist(int src, int dest) {
         this.reset();
         node_data destination = _g.getNode(dest);
         _g.getNode(src).setWeight(0);
-        PriorityQueue<NodeData> q = new PriorityQueue<>();
-        q.add((NodeData) _g.getNode(src));
+        PriorityQueue<node_data> q = new PriorityQueue<>(new Comparator<node_data>(){
+
+			@Override
+			public int compare(node_data o1, node_data o2) {
+				return (int)(o1.getWeight()-o2.getWeight());
+			}
+            
+        });
+        q.add(_g.getNode(src));
         while (!q.isEmpty()) {
             node_data cur = q.poll();
             int curkey = cur.getKey();
             for (edge_data d : _g.getE(curkey)) {
-                NodeData ni = (NodeData) _g.getNode(d.getDest());
+                node_data ni = _g.getNode(d.getDest());
                 double distance = d.getWeight() + cur.getWeight();
                 if (ni.getWeight() > distance) {
                     ni.setWeight(distance);
@@ -153,39 +160,16 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     @Override
     public boolean save(String file) {
 
-//        Gson g = new  GsonBuilder().create();
-//        String json = g.toJson(_g);
-        JsonArray Nodes = new JsonArray();
-        JsonArray Edges = new JsonArray();
-        for (node_data i : _g.getV()) {
-            JsonObject node = new JsonObject();
-            double x, y, z;
-            int id = i.getKey();
-            x = i.getLocation().x();
-            y = i.getLocation().y();
-            z = i.getLocation().z();
+        Gson g = new  GsonBuilder().create();
+         String json = g.toJson(_g);
 
-            node.addProperty("pos", x + "," + y + "," + z);
-            node.addProperty("id", "" + id);
-            Nodes.add(node);
-
-            for (edge_data j : _g.getE(i.getKey())) {
-                JsonObject edge = new JsonObject();
-                edge.addProperty("src", "" + j.getSrc());
-                edge.addProperty("w", "" + j.getWeight());
-                edge.addProperty("dest", "" + j.getDest());
-                Edges.add(edge);
-            }
-        }
-        JsonObject file_to_save = new JsonObject();
-        file_to_save.add("Edges", Edges);
-        file_to_save.add("Nodes", Nodes);
-        try (Writer writer = new FileWriter(file)) {
-            Gson gson = new GsonBuilder().create();
-            gson.toJson(file_to_save, writer);
-            writer.close();
+        try {
+            PrintWriter pw = new PrintWriter(new File(file));
+            pw.write(json);
+            pw.close();
             return true;
-        } catch (IOException e) {
+        }
+        catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
         }
@@ -196,14 +180,15 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
         try {
             GsonBuilder builder = new GsonBuilder();
-            builder.registerTypeAdapter(directed_weighted_graph.class, new JsonGraph());
+            builder.registerTypeAdapter(directed_weighted_graph.class, new JsonGraph() );
             Gson gson = builder.create();
 
             FileReader reader = new FileReader((file));
-            _g = gson.fromJson(reader, directed_weighted_graph.class);
-            reader.close();
-            return true;
-        } catch (IOException e) {
+            _g = gson.fromJson(reader,directed_weighted_graph.class);
+
+         return true;
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return false;
         }
