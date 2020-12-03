@@ -42,13 +42,18 @@ public class Myclient implements Runnable {
         win.setVisible(true);
         win.repaint();
 
-        game.login(316071349);
+        game.login(205544851);
         game.startGame();
         System.out.println("game started = " + game.isRunning() + ", ends in: " + (game.timeToEnd() / 1000) + "\'s");
 
         Gson gson = new Gson();
+        boolean need_to_move = false;
+        int ntmFilter = 0;
         while (game.isRunning()) {
-            boolean need_to_move = false;
+            if (ntmFilter % 900 == 0) {
+                need_to_move = true;
+            }
+            ntmFilter++;
             JsonObject json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
             JsonObject json_pokemons = gson.fromJson(game.getPokemons(), JsonObject.class);
             boolean[] open = new boolean[arena.get_pokemons().size()];
@@ -60,16 +65,15 @@ public class Myclient implements Runnable {
                 if (!agent.isOnEdge() && !agent.isAvailable()) {
                     game.chooseNextEdge(agent.get_id(), agent.nextNode().getKey());
 //                     System.out.println("agent "+agent.get_id()+" turned to node "+agent.get_current_node().getKey());
-
-                }
-                else if (agent.isAvailable()) {
+                    need_to_move = !need_to_move;
+                } else if (agent.isAvailable()) {
                     double min = Double.MAX_VALUE;
                     Pokemon candi = null;
                     for (int i = 0; i < open.length; i++) {
-                        if(open[i]){
+                        if (open[i]) {
                             Pokemon p = arena.get_pokemons().get(i);
-                            double distance = ga.shortestPathDist(agent.get_current_node().getKey(),p.get_edge().getSrc()) + p.get_edge().getWeight();
-                            if( distance < min){
+                            double distance = ga.shortestPathDist(agent.get_current_node().getKey(), p.get_edge().getSrc()) + p.get_edge().getWeight();
+                            if (distance < min) {
                                 candi = p;
                                 min = distance;
                             }
@@ -77,16 +81,17 @@ public class Myclient implements Runnable {
                     }
                     agent.set_target(candi);
                 }
-                else{
-                    need_to_move = true;
-                }
+//                else{
+//
+//                }
             }
 
             if (need_to_move) {
                 game.move();
-                System.out.println("1");
+                need_to_move = false;
+                arena.setMove(arena.getMove()+1);
             }
-            arena.setScore(gson.fromJson(game.toString(),JsonObject.class).getAsJsonObject("GameServer").getAsJsonObject().get("grade").getAsInt());
+            arena.setScore(gson.fromJson(game.toString(), JsonObject.class).getAsJsonObject("GameServer").getAsJsonObject().get("grade").getAsInt());
             win.repaint();
         }
         System.out.println(game.toString());

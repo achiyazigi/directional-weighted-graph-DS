@@ -14,6 +14,7 @@ public class Arena {
     private ArrayList<Agent> _agents;
     private ArrayList<Pokemon> _pokemons;
     private int score = 0;
+    private int move = 0;
 
 //    {"Pokemons":[{"Pokemon":{"value":5.0,"type":-1,"pos":"35.197656770719604,32.10191878639921,0.0"}}]}
 
@@ -84,5 +85,13 @@ public class Arena {
 
     public int get_level() {
         return _level;
+    }
+
+    public int getMove() {
+        return move;
+    }
+
+    public void setMove(int move) {
+        this.move = move;
     }
 }

@@ -58,7 +58,8 @@ public class Frame extends JFrame {
         Font font = canvas.getFont().deriveFont(30.0f);
         canvas.setFont(font);
         canvas.setColor(Color.BLUE);
-        canvas.drawString("Score:"+_arena.getScore() + "    level:" + _arena.get_level(),w/10,h/5);
+        canvas.drawString("level:" + _arena.get_level() + "     Score:"+_arena.getScore() +
+                "     moves: " + _arena.getMove(),w/10,h/5);
 
         canvas.setFont(canvas.getFont().deriveFont(14.0f));
         drawGraph(canvas);
