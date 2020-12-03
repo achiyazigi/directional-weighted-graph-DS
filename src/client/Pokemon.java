@@ -68,4 +68,16 @@ public class Pokemon {
         }
         return false;
     }
+
+    // @Override
+    // public int hashCode() {
+    //     int hash = 31;
+    //     hash *= 31 + _type;
+    //     hash *= 31 + _value;
+    //     hash *= 31 + _pos.x();
+    //     hash *= 31 + _pos.y();
+    //     hash *= 31 + _pos.z();
+
+    //     return hash;
+    // }
 }

@@ -61,4 +61,15 @@ public class Arena {
             _agents.add(new Agent(j, null));
         }
     }
+    
+    public void update_agents(boolean[] open, JsonObject json_agents) {
+        Gson gson = new Gson();
+        JsonObject[] agents_state = gson.fromJson(json_agents.getAsJsonArray("Agents"), JsonObject[].class);
+        for (int i = 0; i < agents_state.length; i++) {
+            _agents.get(i).set_pos(agents_state[i].get("Agent").getAsJsonObject().get("pos").getAsString().split(","));
+            int idx = _pokemons.indexOf(_agents.get(i).get_target());
+            if(idx > -1)
+                open[idx] = false;
+        }
+    }
 }
