@@ -64,14 +64,12 @@ public class Frame extends JFrame{
     private void drawAgants(Graphics canvas) {
         canvas.setColor(Color.red);
         for (Agent agent : _arena.get_agents()) {
-            if(agent.isMoving()){
-                geo_location agent_location = agent.get_current_node().getLocation();
-                int r = 8;
-                geo_location converted_pos = this._w2f.world2frame(agent_location);
-                int x = (int)converted_pos.x()-r;
-                int y = (int)converted_pos.y()-r;
-                canvas.fillOval(x, y, 2*r, 2*r);
-            }
+            geo_location agent_location = agent.get_pos();
+            int r = 8;
+            geo_location converted_pos = this._w2f.world2frame(agent_location);
+            int x = (int)converted_pos.x()-r;
+            int y = (int)converted_pos.y()-r;
+            canvas.fillOval(x, y, 2*r, 2*r);
         }
     }
     

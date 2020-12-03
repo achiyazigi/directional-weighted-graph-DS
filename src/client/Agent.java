@@ -14,26 +14,23 @@ public class Agent {
     private Pokemon _target;
     private List<node_data> _path;
     private node_data _current_node;
-    private dw_graph_algorithms ga;
     private geo_location _pos;
-
+    private boolean _available = true;
 
     public Agent(int id, Pokemon pokemon) {
-        ga = new DWGraph_Algo();
-        ga.init(Myclient.g);
         _id = id;
-        this.set_target(pokemon);
+        _target = pokemon;
+        _path = new LinkedList<>();
         if(_target != null) {
             _current_node = Myclient.g.getNode(_target.get_edge().getSrc());
-
+            _pos = _current_node.getLocation();
+            _available = false;
+            _path.add(Myclient.g.getNode(_target.get_edge().getDest()));
         }
         else{
             _current_node = Myclient.g.getV().iterator().next();
             _pos = _current_node.getLocation();
         }
-        _path = new LinkedList<>();
-        if(_target != null)
-            _path.add(Myclient.g.getNode(_target.get_edge().getDest()));
     }
 
 
@@ -46,10 +43,16 @@ public class Agent {
         return _target;
     }
 
-    public void set_target(Pokemon _target) {
-        this._target = _target;
-        if(_target != null && _current_node != null)
-            _path = ga.shortestPath(_current_node.getKey(), Myclient.g.getNode(_target.get_edge().getDest()).getKey());
+    public void set_target(Pokemon target) {
+        _target = target;
+        if(_target == null){
+            _available = true;
+        }
+        else{   // cur -> pathToTargetSrc... -> targetDest
+            _available = false;
+            _path = Myclient.ga.shortestPath(_current_node.getKey(), Myclient.g.getNode(_target.get_edge().getSrc()).getKey());
+            _path.add(Myclient.g.getNode(_target.get_edge().getDest()));
+        }
 
     }
 
@@ -57,34 +60,34 @@ public class Agent {
         return _current_node;
     }
 
-    public void set_current_node(node_data _current_node) {
-        this._current_node = _current_node;
-    }
-
     public List<node_data> get_path() {
         return _path;
     }
 
-    public void set_path(List<node_data> _path) {
-        this._path = _path;
-    }
-
     public node_data nextNode(){
-        _current_node = _path.remove(0); // might be an exception!!
-        if(_current_node == null)
+        if(_path.isEmpty()){
+            _available = true;
             Myclient.arena.get_pokemons().remove(_target);
+        }
+        else{
+            _current_node = _path.remove(0);
+        }
         return _current_node;
     }
 
-    public boolean isMoving() {
-        return _current_node != null;
+    public boolean isAvailable() {
+        return _available;
     }
 
     public boolean isOnEdge() {
-        return isMoving() &&
+        return !_available &&
                (_pos.x()!= _current_node.getLocation().x() ||
                _pos.y() != _current_node.getLocation().y() ||
                _pos.z() != _current_node.getLocation().z());
+    }
+
+    public geo_location get_pos() {
+        return _pos;
     }
 
 	public void set_pos(String[] split) {

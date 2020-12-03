@@ -20,24 +20,14 @@ public class Arena {
         _pokemons = new ArrayList<>();
         _agents = new ArrayList<>();
         _level = level;
+
         Gson gson = new Gson();
         JsonObject json_game = gson.fromJson(string_game,JsonObject.class);
         int num_of_agents = json_game.getAsJsonObject("GameServer").get("agents").getAsInt();
         JsonObject json_pokemons = gson.fromJson(string_pokemons,JsonObject.class);
-        JsonObject[] pokemon_array_jason = gson.fromJson(json_pokemons.getAsJsonArray("Pokemons"), JsonObject[].class);
-        for (JsonObject p : pokemon_array_jason) {
-            Pokemon pokemon = new Pokemon(p);
-            _pokemons.add(pokemon);
-            if (num_of_agents > 0) {
-                _agents.add(new Agent(num_of_agents, pokemon));
-                num_of_agents--;
-            }
-        }
-        while (num_of_agents > 0) {
-            _agents.add(new Agent(num_of_agents, null));
-            num_of_agents--;
-        }
-
+        // JsonObject[] pokemon_array_jason = gson.fromJson(json_pokemons.getAsJsonArray("Pokemons"), JsonObject[].class);
+        set_pokemons(json_pokemons);
+        set_agents(num_of_agents);
     }
 
     public ArrayList<Agent> get_agents() {
@@ -60,5 +50,13 @@ public class Arena {
         _pokemons = new_pokemons;
     }
 
-    
+    public void set_agents(int num_of_agents) {
+        int i = 0;
+        for (Pokemon p : _pokemons) {
+            _agents.add(new Agent(i++, p));
+        }
+        for (int j = i; j < num_of_agents; j++) {
+            _agents.add(new Agent(j, null));
+        }
+    }
 }
