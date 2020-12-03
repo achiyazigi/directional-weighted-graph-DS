@@ -21,13 +21,12 @@ public class Agent {
         _id = id;
         _target = pokemon;
         _path = new LinkedList<>();
-        if(_target != null) {
+        if (_target != null) {
             _current_node = Myclient.g.getNode(_target.get_edge().getSrc());
             _pos = _current_node.getLocation();
             _available = false;
             _path.add(Myclient.g.getNode(_target.get_edge().getDest()));
-        }
-        else{
+        } else {
             _current_node = Myclient.g.getV().iterator().next();
             _pos = _current_node.getLocation();
         }
@@ -45,10 +44,9 @@ public class Agent {
 
     public void set_target(Pokemon target) {
         _target = target;
-        if(_target == null){
+        if (_target == null) {
             _available = true;
-        }
-        else{   // cur -> pathToTargetSrc... -> targetDest
+        } else {   // cur -> pathToTargetSrc... -> targetDest
             _available = false;
             _path = Myclient.ga.shortestPath(_current_node.getKey(), Myclient.g.getNode(_target.get_edge().getSrc()).getKey());
             _path.add(Myclient.g.getNode(_target.get_edge().getDest()));
@@ -65,13 +63,11 @@ public class Agent {
         return _path;
     }
 
-    public node_data nextNode(){
-        if(_path.isEmpty() || !Myclient.arena.get_pokemons().contains(_target)){
+    public node_data nextNode() {
+        if (_path.isEmpty() || !Myclient.arena.get_pokemons().contains(_target)) {
             _available = true;
 //            Myclient.arena.get_pokemons().remove(_target);
-        }
-
-        else {
+        } else {
             _current_node = _path.remove(0);
         }
         return _current_node;
@@ -82,17 +78,17 @@ public class Agent {
     }
 
     public boolean isOnEdge() {
-        return !_available &&
-               (_pos.x()!= _current_node.getLocation().x() ||
+        return _pos.x() != _current_node.getLocation().x() ||
                _pos.y() != _current_node.getLocation().y() ||
-               _pos.z() != _current_node.getLocation().z());
+               _pos.z() != _current_node.getLocation().z() ;
+
     }
 
     public geo_location get_pos() {
         return _pos;
     }
 
-	public void set_pos(String[] split) {
+    public void set_pos(String[] split) {
         _pos = new GeoLocation(Double.parseDouble(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]));
-	}
+    }
 }

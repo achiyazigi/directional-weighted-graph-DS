@@ -21,6 +21,7 @@ public class Myclient implements Runnable {
     private int _level;
 
     public Myclient(int level_number) {
+
         _level = level_number;
     }
 
@@ -30,7 +31,7 @@ public class Myclient implements Runnable {
 
         init_g(game.getGraph());
 
-        arena = new Arena(0, game.toString(), game.getPokemons());
+        arena = new Arena(_level, game.toString(), game.getPokemons());
 
         for (Agent agent : arena.get_agents()) {
             game.addAgent(agent.get_current_node().getKey());
@@ -47,19 +48,19 @@ public class Myclient implements Runnable {
 
         Gson gson = new Gson();
         while (game.isRunning()) {
+            boolean need_to_move = false;
             JsonObject json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
             JsonObject json_pokemons = gson.fromJson(game.getPokemons(), JsonObject.class);
             boolean[] open = new boolean[arena.get_pokemons().size()];
             Arrays.fill(open, true);
             arena.set_pokemons(json_pokemons);
             arena.update_agents(open, json_agents);
-            boolean need_to_move = false;
+
             for (Agent agent : arena.get_agents()) {
                 if (!agent.isOnEdge() && !agent.isAvailable()) {
                     game.chooseNextEdge(agent.get_id(), agent.nextNode().getKey());
-                    need_to_move = true;
+//                     System.out.println("agent "+agent.get_id()+" turned to node "+agent.get_current_node().getKey());
 
-                    // System.out.println("agent "+agent.get_id()+" turned to node "+agent.get_current_node().getKey());
                 }
                 else if (agent.isAvailable()) {
                     double min = Double.MAX_VALUE;
@@ -80,9 +81,12 @@ public class Myclient implements Runnable {
                     need_to_move = true;
                 }
             }
+
             if (need_to_move) {
                 game.move();
+                System.out.println("1");
             }
+            arena.setScore(gson.fromJson(game.toString(),JsonObject.class).getAsJsonObject("GameServer").getAsJsonObject().get("grade").getAsInt());
             win.repaint();
         }
         System.out.println(game.toString());

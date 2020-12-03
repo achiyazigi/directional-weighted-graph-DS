@@ -53,7 +53,14 @@ public class Frame extends JFrame {
     public void paintComponents(Graphics canvas) {
         int w = this.getWidth();
         int h = this.getHeight();
-        canvas.clearRect(0, 0, w, h);
+        canvas.setColor(new Color(255,242,249));
+        canvas.fillRect(0, 0, w, h);
+        Font font = canvas.getFont().deriveFont(30.0f);
+        canvas.setFont(font);
+        canvas.setColor(Color.BLUE);
+        canvas.drawString("Score:"+_arena.getScore() + "    level:" + _arena.get_level(),w/10,h/5);
+
+        canvas.setFont(canvas.getFont().deriveFont(14.0f));
         drawGraph(canvas);
         drawPokemons(canvas);
         drawAgants(canvas);
@@ -107,6 +114,7 @@ public class Frame extends JFrame {
         int y = (int) converted_pos.y() - r;
         canvas.fillOval(x, y, 2 * r, 2 * r);
         canvas.drawString("" + n.getKey(), (int) converted_pos.x(), (int) converted_pos.y() - 4 * r);
+
     }
 
     private void drawEdge(edge_data e, Graphics canvas) {

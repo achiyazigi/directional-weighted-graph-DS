@@ -13,6 +13,7 @@ public class Arena {
     private int _level;
     private ArrayList<Agent> _agents;
     private ArrayList<Pokemon> _pokemons;
+    private int score = 0;
 
 //    {"Pokemons":[{"Pokemon":{"value":5.0,"type":-1,"pos":"35.197656770719604,32.10191878639921,0.0"}}]}
 
@@ -71,5 +72,17 @@ public class Arena {
             if(idx > -1)
                 open[idx] = false;
         }
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int get_level() {
+        return _level;
     }
 }
