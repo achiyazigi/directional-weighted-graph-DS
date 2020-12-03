@@ -53,7 +53,9 @@ public class Arena {
     public void set_agents(int num_of_agents) {
         int i = 0;
         for (Pokemon p : _pokemons) {
-            _agents.add(new Agent(i++, p));
+            if(i<num_of_agents){
+                _agents.add(new Agent(i++, p));
+        }
         }
         for (int j = i; j < num_of_agents; j++) {
             _agents.add(new Agent(j, null));

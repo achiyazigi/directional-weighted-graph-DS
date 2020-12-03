@@ -52,6 +52,7 @@ public class Agent {
             _available = false;
             _path = Myclient.ga.shortestPath(_current_node.getKey(), Myclient.g.getNode(_target.get_edge().getSrc()).getKey());
             _path.add(Myclient.g.getNode(_target.get_edge().getDest()));
+
         }
 
     }
@@ -65,11 +66,12 @@ public class Agent {
     }
 
     public node_data nextNode(){
-        if(_path.isEmpty()){
+        if(_path.isEmpty() || !Myclient.arena.get_pokemons().contains(_target)){
             _available = true;
-            Myclient.arena.get_pokemons().remove(_target);
+//            Myclient.arena.get_pokemons().remove(_target);
         }
-        else{
+
+        else {
             _current_node = _path.remove(0);
         }
         return _current_node;
