@@ -47,12 +47,9 @@ public class Myclient implements Runnable {
         System.out.println("game started = " + game.isRunning() + ", ends in: " + (game.timeToEnd() / 1000) + "\'s");
 
         Gson gson = new Gson();
-        boolean need_to_move = false;
-        int ntmFilter = 0;
+        int ntmFilter = -1;
         while (game.isRunning()) {
-            if (ntmFilter % 900 == 0) {
-                need_to_move = true;
-            }
+
             ntmFilter++;
             JsonObject json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
             JsonObject json_pokemons = gson.fromJson(game.getPokemons(), JsonObject.class);
@@ -65,7 +62,6 @@ public class Myclient implements Runnable {
                 if (!agent.isOnEdge() && !agent.isAvailable()) {
                     game.chooseNextEdge(agent.get_id(), agent.nextNode().getKey());
 //                     System.out.println("agent "+agent.get_id()+" turned to node "+agent.get_current_node().getKey());
-                    need_to_move = !need_to_move;
                 } else if (agent.isAvailable()) {
                     double min = Double.MAX_VALUE;
                     Pokemon candi = null;
@@ -80,16 +76,16 @@ public class Myclient implements Runnable {
                         }
                     }
                     agent.set_target(candi);
+                    if(arena.get_pokemons().indexOf(candi) != -1){
+                        open[arena.get_pokemons().indexOf(candi)] = false;
+                    }
                 }
-//                else{
-//
-//                }
+
             }
 
-            if (need_to_move) {
+            if (ntmFilter % 900   == 0) {
                 game.move();
-                need_to_move = false;
-                arena.setMove(arena.getMove()+1);
+                arena.move_plus1();
             }
             arena.setScore(gson.fromJson(game.toString(), JsonObject.class).getAsJsonObject("GameServer").getAsJsonObject().get("grade").getAsInt());
             win.repaint();

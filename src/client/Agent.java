@@ -47,9 +47,19 @@ public class Agent {
         if (_target == null) {
             _available = true;
         } else {   // cur -> pathToTargetSrc... -> targetDest
-            _available = false;
-            _path = Myclient.ga.shortestPath(_current_node.getKey(), Myclient.g.getNode(_target.get_edge().getSrc()).getKey());
-            _path.add(Myclient.g.getNode(_target.get_edge().getDest()));
+
+//            for (Agent agn: Myclient.arena.get_agents()  ) {
+//                     set_target(Myclient.arena.get_pokemons().get(0));
+//                        break;
+                    _available = false;
+                    _path = Myclient.ga.shortestPath(_current_node.getKey(), Myclient.g.getNode(_target.get_edge().getSrc()).getKey());
+                    _path.add(Myclient.g.getNode(_target.get_edge().getDest()));
+
+
+
+//            }
+
+
 
         }
 

@@ -68,10 +68,22 @@ public class Arena {
         Gson gson = new Gson();
         JsonObject[] agents_state = gson.fromJson(json_agents.getAsJsonArray("Agents"), JsonObject[].class);
         for (int i = 0; i < agents_state.length; i++) {
-            _agents.get(i).set_pos(agents_state[i].get("Agent").getAsJsonObject().get("pos").getAsString().split(","));
-            int idx = _pokemons.indexOf(_agents.get(i).get_target());
+            int id = agents_state[i].get("Agent").getAsJsonObject().get("id").getAsInt();
+            Agent agent = _agents.get(id);
+            agent.set_pos(agents_state[i].get("Agent").getAsJsonObject().get("pos").getAsString().split(","));
+            int idx = _pokemons.indexOf(agent.get_target());
             if(idx > -1)
                 open[idx] = false;
+
+
+            for (int j = 1; j < _agents.get(i).get_path().size(); j++) {
+                for(Pokemon p: _pokemons){
+                    if(p.get_edge().getSrc() == agent.get_path().get(j-1).getKey() && p.get_edge().getDest() == agent.get_path().get(j).getKey()){
+                        open[_pokemons.indexOf(p)] = false;
+                        // System.out.println("agent" + agent.get_id()+" will collect also "+p.get_edge().getSrc());
+                    }
+                }
+            }
         }
     }
 
@@ -91,7 +103,7 @@ public class Arena {
         return move;
     }
 
-    public void setMove(int move) {
-        this.move = move;
+    public void move_plus1() {
+        this.move = move+1;
     }
 }
