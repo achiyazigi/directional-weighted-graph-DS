@@ -11,6 +11,7 @@ public class Pokemon {
     private Point3D _pos;
     private int _type;
 
+    public Pokemon(){}
     public Pokemon(JsonObject json_pokemon) {
         JsonObject pokemon = json_pokemon.getAsJsonObject("Pokemon");
         _value = pokemon.get("value").getAsInt();

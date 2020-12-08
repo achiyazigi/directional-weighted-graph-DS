@@ -24,10 +24,9 @@ public class Arena {
         _level = level;
 
         Gson gson = new Gson();
-        JsonObject json_game = gson.fromJson(string_game,JsonObject.class);
+        JsonObject json_game = gson.fromJson(string_game, JsonObject.class);
         int num_of_agents = json_game.getAsJsonObject("GameServer").get("agents").getAsInt();
-        JsonObject json_pokemons = gson.fromJson(string_pokemons,JsonObject.class);
-        // JsonObject[] pokemon_array_jason = gson.fromJson(json_pokemons.getAsJsonArray("Pokemons"), JsonObject[].class);
+        JsonObject json_pokemons = gson.fromJson(string_pokemons, JsonObject.class);
         set_pokemons(json_pokemons);
         set_agents(num_of_agents);
     }
@@ -54,16 +53,40 @@ public class Arena {
 
     public void set_agents(int num_of_agents) {
         int i = 0;
-        for (Pokemon p : _pokemons) {
-            if(i<num_of_agents){
-                _agents.add(new Agent(i++, p));
+        ArrayList<Pokemon> p_fined_max = new ArrayList<>(_pokemons); // make a copy from _pokemons to let us delete pokemons.
+        Pokemon p_max = new Pokemon();
+
+        for (int k = 0; k < num_of_agents; k++) {
+            double max_pokemons_val = 0;
+
+            for (Pokemon p : p_fined_max) {             // fined the max pokemon value.
+                if (p.get_value() > max_pokemons_val) {
+                    max_pokemons_val = p.get_value();
+                    p_max = p;
+                }
+            }
+            if (p_max != null) {
+                _agents.add(new Agent(k, p_max));   // set the max to be a target.
+                i = k;
+            }
+            p_fined_max.remove(p_max);              // remove it from the copy list.
         }
-        }
-        for (int j = i; j < num_of_agents; j++) {
+        for (int j = i + 1; j < num_of_agents; j++) {
             _agents.add(new Agent(j, null));
         }
+
+////////////////////   last version  //////////////////
+//        for (Pokemon p : _pokemons) {
+//
+//            if (i < num_of_agents) {
+//                _agents.add(new Agent(i++, p));
+//            }
+//        }
+//        for (int j = i; j < num_of_agents; j++) {
+//            _agents.add(new Agent(j, null));
+//        }
     }
-    
+
     public void update_agents(boolean[] open, JsonObject json_agents) {
         Gson gson = new Gson();
         JsonObject[] agents_state = gson.fromJson(json_agents.getAsJsonArray("Agents"), JsonObject[].class);
@@ -72,15 +95,15 @@ public class Arena {
             Agent agent = _agents.get(id);
             agent.set_pos(agents_state[i].get("Agent").getAsJsonObject().get("pos").getAsString().split(","));
             int idx = _pokemons.indexOf(agent.get_target());
-            if(idx > -1)
+            agent.set_speed(agents_state[i].get("Agent").getAsJsonObject().get("speed").getAsDouble());
+            if (idx > -1) {
                 open[idx] = false;
-
+            }
 
             for (int j = 1; j < _agents.get(i).get_path().size(); j++) {
-                for(Pokemon p: _pokemons){
-                    if(p.get_edge().getSrc() == agent.get_path().get(j-1).getKey() && p.get_edge().getDest() == agent.get_path().get(j).getKey()){
+                for (Pokemon p : _pokemons) {
+                    if (p.get_edge().getSrc() == agent.get_path().get(j - 1).getKey() && p.get_edge().getDest() == agent.get_path().get(j).getKey()) {
                         open[_pokemons.indexOf(p)] = false;
-                        // System.out.println("agent" + agent.get_id()+" will collect also "+p.get_edge().getSrc());
                     }
                 }
             }
@@ -104,6 +127,6 @@ public class Arena {
     }
 
     public void move_plus1() {
-        this.move = move+1;
+        this.move = move + 1;
     }
 }

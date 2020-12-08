@@ -16,8 +16,10 @@ public class Agent {
     private node_data _current_node;
     private geo_location _pos;
     private boolean _available = true;
+    private double _speed;
 
     public Agent(int id, Pokemon pokemon) {
+        _speed = 1;
         _id = id;
         _target = pokemon;
         _path = new LinkedList<>();
@@ -48,22 +50,12 @@ public class Agent {
             _available = true;
         } else {   // cur -> pathToTargetSrc... -> targetDest
 
-//            for (Agent agn: Myclient.arena.get_agents()  ) {
-//                     set_target(Myclient.arena.get_pokemons().get(0));
-//                        break;
                     _available = false;
                     _path = Myclient.ga.shortestPath(_current_node.getKey(), Myclient.g.getNode(_target.get_edge().getSrc()).getKey());
                     _path.add(Myclient.g.getNode(_target.get_edge().getDest()));
-
-
-
-//            }
-
-
-
         }
-
     }
+
 
     public node_data get_current_node() {
         return _current_node;
@@ -76,7 +68,6 @@ public class Agent {
     public node_data nextNode() {
         if (_path.isEmpty() || !Myclient.arena.get_pokemons().contains(_target)) {
             _available = true;
-//            Myclient.arena.get_pokemons().remove(_target);
         } else {
             _current_node = _path.remove(0);
         }
@@ -100,5 +91,13 @@ public class Agent {
 
     public void set_pos(String[] split) {
         _pos = new GeoLocation(Double.parseDouble(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]));
+    }
+
+    public double get_speed() {
+        return _speed;
+    }
+
+    public void set_speed(double speed) {
+        _speed = speed;
     }
 }

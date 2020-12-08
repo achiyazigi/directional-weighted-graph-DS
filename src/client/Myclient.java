@@ -59,13 +59,14 @@ public class Myclient implements Runnable {
             arena.update_agents(open, json_agents);
 
             for (Agent agent : arena.get_agents()) {
+
                 if (!agent.isOnEdge() && !agent.isAvailable()) {
                     game.chooseNextEdge(agent.get_id(), agent.nextNode().getKey());
-//                     System.out.println("agent "+agent.get_id()+" turned to node "+agent.get_current_node().getKey());
                 } else if (agent.isAvailable()) {
                     double min = Double.MAX_VALUE;
                     Pokemon candi = null;
                     for (int i = 0; i < open.length; i++) {
+
                         if (open[i]) {
                             Pokemon p = arena.get_pokemons().get(i);
                             double distance = ga.shortestPathDist(agent.get_current_node().getKey(), p.get_edge().getSrc()) + p.get_edge().getWeight();
