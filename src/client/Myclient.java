@@ -5,55 +5,67 @@ import Server.Game_Server_Ex2;
 import api.game_service;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 
 public class Myclient implements Runnable {
 
     public static directed_weighted_graph g;
     public static dw_graph_algorithms ga;
+    public static game_service game;
     public static Arena arena;
     private int _level;
+    private boolean[] open;
+    private Painter _painter;
 
-    public Myclient(int level_number) {
+    public Myclient(int level_number, Painter painter) {
 
         _level = level_number;
+        _painter = painter;
     }
 
     @Override
     public void run() {
-        game_service game = Game_Server_Ex2.getServer(_level);
+        game = Game_Server_Ex2.getServer(_level);
 
         init_g(game.getGraph());
 
-        arena = new Arena(_level, game.toString(), game.getPokemons());
+        arena = new Arena(game.toString(), game.getPokemons());
 
         for (Agent agent : arena.get_agents()) {
             game.addAgent(agent.get_current_node().getKey());
         }
+        synchronized (_painter) {
+            _painter.notifyAll();
+        }
 
-        Frame win = new Frame("test", arena);
-        win.setSize(700, 500);
-        win.setVisible(true);
-        win.repaint();
-
-        game.login(205544851);
+        game.login(316071349);
         game.startGame();
+
         System.out.println("game started = " + game.isRunning() + ", ends in: " + (game.timeToEnd() / 1000) + "\'s");
 
+
+        Thread move = new Thread(new Move());
+        move.start();
+
+        
         Gson gson = new Gson();
-        int ntmFilter = -1;
+        JsonObject  json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
+        JsonObject json_pokemons = gson.fromJson(game.getPokemons(), JsonObject.class);
+        int ntmFilter = 0; // unsolved feature, needs to be replaced with sleep
         while (game.isRunning()) {
 
-            ntmFilter++;
-            JsonObject json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
-            JsonObject json_pokemons = gson.fromJson(game.getPokemons(), JsonObject.class);
-            boolean[] open = new boolean[arena.get_pokemons().size()];
+            try{
+                json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
+                json_pokemons = gson.fromJson(game.getPokemons(), JsonObject.class);
+
+            }
+            catch(IndexOutOfBoundsException e){}
+            open = new boolean[arena.get_pokemons().size()];
             Arrays.fill(open, true);
             arena.set_pokemons(json_pokemons);
             arena.update_agents(open, json_agents);
@@ -69,7 +81,8 @@ public class Myclient implements Runnable {
 
                         if (open[i]) {
                             Pokemon p = arena.get_pokemons().get(i);
-                            double distance = ga.shortestPathDist(agent.get_current_node().getKey(), p.get_edge().getSrc()) + p.get_edge().getWeight();
+                            double distance = ga.shortestPathDist(agent.get_current_node().getKey(),
+                                    p.get_edge().getSrc()) + p.get_edge().getWeight();
                             if (distance < min) {
                                 candi = p;
                                 min = distance;
@@ -77,19 +90,20 @@ public class Myclient implements Runnable {
                         }
                     }
                     agent.set_target(candi);
-                    if(arena.get_pokemons().indexOf(candi) != -1){
-                        open[arena.get_pokemons().indexOf(candi)] = false;
+                    int idx = arena.get_pokemons().indexOf(candi);
+                    if (idx != -1) {
+                        open[idx] = false;
                     }
                 }
 
             }
 
-            if (ntmFilter % 900   == 0) {
-                game.move();
-                arena.move_plus1();
+            arena.setScore(gson.fromJson(game.toString(), JsonObject.class).getAsJsonObject("GameServer")
+                    .getAsJsonObject().get("grade").getAsInt());
+
+            synchronized (_painter) {
+                _painter.notifyAll();// refreshing the window
             }
-            arena.setScore(gson.fromJson(game.toString(), JsonObject.class).getAsJsonObject("GameServer").getAsJsonObject().get("grade").getAsInt());
-            win.repaint();
         }
         System.out.println(game.toString());
         System.exit(0);
@@ -106,5 +120,21 @@ public class Myclient implements Runnable {
         }
         ga.load("out\\g5.json");
         g = ga.getGraph();
+    }
+
+    private class Move implements Runnable {
+
+        public void run() {
+            while (Myclient.game.isRunning()) {
+                Myclient.game.move();
+                Myclient.arena.move_plus1();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 }

@@ -1,16 +1,14 @@
 package client;
 
 public class Engine {
-    public static void main(String[] args) {
 
-
-            Thread code = new Thread(new Myclient(11));
-            code.start();
-            try {
-                code.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
+    public static void main(String[] args) throws InterruptedException {
+        Painter painter = new Painter();
+        Thread code = new Thread(new Myclient(23, painter));
+        code.start();
+        Thread graphics = new Thread(painter);
+        graphics.start();
+        code.join();
+        graphics.join();
     }
 }

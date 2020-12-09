@@ -5,21 +5,29 @@ import gameClient.util.Point3D;
 import gameClient.util.Range;
 import gameClient.util.Range2D;
 import gameClient.util.Range2Range;
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Frame extends JFrame {
+public class Frame extends JFrame implements ActionListener {
 
     private Arena _arena;
+    private MenuBar _menuBar;
     private gameClient.util.Range2Range _w2f;
-
 
     public Frame(String title, Arena arena) {
         super(title);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         _arena = arena;
         updateFrame();
-
+        Menu game_menu = new Menu("Game");
+        MenuItem stop = new MenuItem("Stop Game");
+        stop.addActionListener(this);
+        game_menu.add(stop);
+        _menuBar = new MenuBar();
+        _menuBar.add(game_menu);
+        this.setMenuBar(_menuBar);
     }
 
     private void updateFrame() {
@@ -46,25 +54,28 @@ public class Frame extends JFrame {
 
         // "Switch" the old "canvas" for the new one
         canvas.drawImage(buffer_image, 0, 0, this);
-
     }
 
     @Override
     public void paintComponents(Graphics canvas) {
         int w = this.getWidth();
         int h = this.getHeight();
-        canvas.setColor(new Color(255,242,249));
+        canvas.setColor(new Color(255, 242, 249));
         canvas.fillRect(0, 0, w, h);
-        Font font = canvas.getFont().deriveFont(30.0f);
+        Font font = new Font("Monospaced", Font.BOLD | Font.ITALIC, 17);
         canvas.setFont(font);
         canvas.setColor(Color.BLUE);
-        canvas.drawString("level:" + _arena.get_level() + "     Score:"+_arena.getScore() +
-                "     moves: " + _arena.getMove(),w/10,h/5);
-
-        canvas.setFont(canvas.getFont().deriveFont(14.0f));
+        geo_location converted_pos = _w2f.getFrame().fromPortion(new GeoLocation(0, 0, 0));
+        int x = (int) converted_pos.x();
+        int y = (int) converted_pos.y();
+        canvas.drawString(
+                "level:" + _arena.get_level() + "     Score:" + _arena.getScore() + "     moves: " + _arena.getMove(),
+                x, y);
+        canvas.setFont(canvas.getFont().deriveFont(Font.PLAIN, 14));
         drawGraph(canvas);
         drawPokemons(canvas);
         drawAgants(canvas);
+
     }
 
     private void drawAgants(Graphics canvas) {
@@ -72,13 +83,13 @@ public class Frame extends JFrame {
             canvas.setColor(Color.red);
             geo_location agent_location = agent.get_pos();
             int r = 8;
-            geo_location converted_pos = this._w2f.world2frame(agent_location);
+            geo_location converted_pos = _w2f.world2frame(agent_location);
             int x = (int) converted_pos.x() - r;
             int y = (int) converted_pos.y() - r;
             canvas.fillOval(x, y, 2 * r, 2 * r);
             canvas.setColor(Color.black);
             canvas.drawString("" + agent.get_target().get_edge().getDest(), x + r, y - 10);
-            canvas.drawString("" + agent.get_id(), x+5, y+13);
+            canvas.drawString("" + agent.get_id(), x + 5, y + 13);
         }
     }
 
@@ -90,7 +101,7 @@ public class Frame extends JFrame {
             if (p.get_type() < 0) {
                 canvas.setColor(Color.orange);
             }
-            geo_location converted_pos = this._w2f.world2frame(location);
+            geo_location converted_pos = _w2f.world2frame(location);
             int x = (int) converted_pos.x() - r;
             int y = (int) converted_pos.y() - r;
             canvas.fillOval(x, y, 2 * r, 2 * r);
@@ -124,10 +135,11 @@ public class Frame extends JFrame {
         geo_location s0 = this._w2f.world2frame(s);
         geo_location d0 = this._w2f.world2frame(d);
         canvas.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
-//         Font font = canvas.getFont().deriveFont(40);
-//         canvas.setFont(font);
+        // Font font = canvas.getFont().deriveFont(40);
+        // canvas.setFont(font);
 
-//		 canvas.drawString(""+e.getWeight(), (int)(d0.x()/2+s0.x())/2, (int)(d0.y()+s0.y())/2-10);
+        // canvas.drawString(""+e.getWeight(), (int)(d0.x()/2+s0.x())/2,
+        // (int)(d0.y()+s0.y())/2-10);
     }
 
     private static Range2D GraphRange() {
@@ -156,6 +168,22 @@ public class Frame extends JFrame {
         Range xr = new Range(x0, x1);
         Range yr = new Range(y0, y1);
         return new Range2D(xr, yr);
+    }
+
+    /**
+     * this should be in a new class called Controller.java... but since there's
+     * only one menuItems, it's temporary here...
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("Stop Game")) {
+            // try {
+            //     Thread.sleep(100000);
+            // } catch (InterruptedException e1) {
+            //     e1.printStackTrace();
+            // }
+            Myclient.game.stopGame();
+        }
     }
 
 }

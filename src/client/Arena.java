@@ -1,13 +1,9 @@
 package client;
 
 import com.google.gson.*;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import gameClient.util.Range2D;
-
+import api.node_data;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Arena {
     private int _level;
@@ -16,16 +12,17 @@ public class Arena {
     private int score = 0;
     private int move = 0;
 
-//    {"Pokemons":[{"Pokemon":{"value":5.0,"type":-1,"pos":"35.197656770719604,32.10191878639921,0.0"}}]}
-
-    public Arena(int level, String string_game, String string_pokemons) {
+    public Arena(String string_game, String string_pokemons) {
         _pokemons = new ArrayList<>();
         _agents = new ArrayList<>();
-        _level = level;
-
+        
         Gson gson = new Gson();
         JsonObject json_game = gson.fromJson(string_game, JsonObject.class);
-        int num_of_agents = json_game.getAsJsonObject("GameServer").get("agents").getAsInt();
+
+        JsonObject game_object = json_game.getAsJsonObject("GameServer");
+        _level = game_object.get("game_level").getAsInt();
+        int num_of_agents = game_object.get("agents").getAsInt();
+
         JsonObject json_pokemons = gson.fromJson(string_pokemons, JsonObject.class);
         set_pokemons(json_pokemons);
         set_agents(num_of_agents);
@@ -52,58 +49,49 @@ public class Arena {
     }
 
     public void set_agents(int num_of_agents) {
-        int i = 0;
-        ArrayList<Pokemon> p_fined_max = new ArrayList<>(_pokemons); // make a copy from _pokemons to let us delete pokemons.
-        Pokemon p_max = new Pokemon();
-
-        for (int k = 0; k < num_of_agents; k++) {
-            double max_pokemons_val = 0;
-
-            for (Pokemon p : p_fined_max) {             // fined the max pokemon value.
-                if (p.get_value() > max_pokemons_val) {
-                    max_pokemons_val = p.get_value();
-                    p_max = p;
+        double[] max_val = new double[num_of_agents];
+        Pokemon[] max_p = new Pokemon[num_of_agents];
+        for (Pokemon p : _pokemons) {
+            double val = p.get_value();
+            for (int j = 0; j < max_p.length; j++) {
+                if(val > max_val[j]){
+                    max_val[j] = val;
+                    max_p[j] = p;
+                    break;
                 }
             }
-            if (p_max != null) {
-                _agents.add(new Agent(k, p_max));   // set the max to be a target.
-                i = k;
-            }
-            p_fined_max.remove(p_max);              // remove it from the copy list.
         }
-        for (int j = i + 1; j < num_of_agents; j++) {
-            _agents.add(new Agent(j, null));
+        int i;
+        for (i=0 ; i < num_of_agents; i++) {
+            _agents.add(new Agent(i, max_p[i]));
         }
 
-////////////////////   last version  //////////////////
-//        for (Pokemon p : _pokemons) {
-//
-//            if (i < num_of_agents) {
-//                _agents.add(new Agent(i++, p));
-//            }
-//        }
-//        for (int j = i; j < num_of_agents; j++) {
-//            _agents.add(new Agent(j, null));
-//        }
     }
 
+   
     public void update_agents(boolean[] open, JsonObject json_agents) {
         Gson gson = new Gson();
         JsonObject[] agents_state = gson.fromJson(json_agents.getAsJsonArray("Agents"), JsonObject[].class);
         for (int i = 0; i < agents_state.length; i++) {
-            int id = agents_state[i].get("Agent").getAsJsonObject().get("id").getAsInt();
+            JsonObject agent_object = agents_state[i].get("Agent").getAsJsonObject();
+            int id = agent_object.get("id").getAsInt();
             Agent agent = _agents.get(id);
-            agent.set_pos(agents_state[i].get("Agent").getAsJsonObject().get("pos").getAsString().split(","));
+            agent.set_pos(agent_object.get("pos").getAsString().split(","));
             int idx = _pokemons.indexOf(agent.get_target());
-            agent.set_speed(agents_state[i].get("Agent").getAsJsonObject().get("speed").getAsDouble());
+            agent.set_speed(agent_object.get("speed").getAsDouble());
             if (idx > -1) {
                 open[idx] = false;
             }
-
-            for (int j = 1; j < _agents.get(i).get_path().size(); j++) {
+            List<node_data> agent_path = agent.get_path();
+            for (int j = 1; j < agent_path.size(); j++) {
                 for (Pokemon p : _pokemons) {
-                    if (p.get_edge().getSrc() == agent.get_path().get(j - 1).getKey() && p.get_edge().getDest() == agent.get_path().get(j).getKey()) {
-                        open[_pokemons.indexOf(p)] = false;
+                    int src = agent_path.get(j - 1).getKey();
+                    int dest = agent_path.get(j).getKey();
+                    if (p.get_edge().getSrc() == src && p.get_edge().getDest() == dest) {
+                        idx = _pokemons.indexOf(p);
+                        if(idx > -1 && idx < open.length){
+                            open[idx] = false;
+                        }
                     }
                 }
             }
@@ -129,4 +117,5 @@ public class Arena {
     public void move_plus1() {
         this.move = move + 1;
     }
+
 }
