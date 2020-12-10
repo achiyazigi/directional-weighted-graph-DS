@@ -5,7 +5,6 @@ import Server.Game_Server_Ex2;
 import api.game_service;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,23 +47,19 @@ public class Myclient implements Runnable {
 
         System.out.println("game started = " + game.isRunning() + ", ends in: " + (game.timeToEnd() / 1000) + "\'s");
 
-
-        Thread move = new Thread(new Move());
+        Move mover = new Move();
+        Thread move = new Thread(mover);
         move.start();
 
         
         Gson gson = new Gson();
         JsonObject  json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
         JsonObject json_pokemons = gson.fromJson(game.getPokemons(), JsonObject.class);
-        int ntmFilter = 0; // unsolved feature, needs to be replaced with sleep
         while (game.isRunning()) {
-
-            try{
-                json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
+            synchronized(mover){
                 json_pokemons = gson.fromJson(game.getPokemons(), JsonObject.class);
-
             }
-            catch(IndexOutOfBoundsException e){}
+            json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
             open = new boolean[arena.get_pokemons().size()];
             Arrays.fill(open, true);
             arena.set_pokemons(json_pokemons);
@@ -74,15 +69,15 @@ public class Myclient implements Runnable {
 
                 if (!agent.isOnEdge() && !agent.isAvailable()) {
                     game.chooseNextEdge(agent.get_id(), agent.nextNode().getKey());
-                } else if (agent.isAvailable()) {
+                }
+                else if (agent.isAvailable()) {
                     double min = Double.MAX_VALUE;
                     Pokemon candi = null;
                     for (int i = 0; i < open.length; i++) {
 
                         if (open[i]) {
                             Pokemon p = arena.get_pokemons().get(i);
-                            double distance = ga.shortestPathDist(agent.get_current_node().getKey(),
-                                    p.get_edge().getSrc()) + p.get_edge().getWeight();
+                            double distance = ga.shortestPathDist(agent.get_current_node().getKey(), p.get_edge().getSrc()) + p.get_edge().getWeight();
                             if (distance < min) {
                                 candi = p;
                                 min = distance;
@@ -94,6 +89,8 @@ public class Myclient implements Runnable {
                     if (idx != -1) {
                         open[idx] = false;
                     }
+                    if(!agent.isOnEdge())
+                        game.chooseNextEdge(agent.get_id(), agent.nextNode().getKey());
                 }
 
             }
@@ -126,11 +123,14 @@ public class Myclient implements Runnable {
 
         public void run() {
             while (Myclient.game.isRunning()) {
-                Myclient.game.move();
-                Myclient.arena.move_plus1();
+                synchronized(this){
+                    Myclient.game.move();
+                    Myclient.arena.move_plus1();
+                }
                 try {
                     Thread.sleep(100);
-                } catch (InterruptedException e) {
+                }
+                catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
