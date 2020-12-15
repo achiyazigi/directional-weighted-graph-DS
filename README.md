@@ -1,6 +1,6 @@
 Ex2 Readme.
 **********************************_Introduction_**********************************
-@auther Ravid Saadia & Achia Zigler
+@auther Ravid Saadia & Achiya Zigler
 @ID: 308212570
 
 
@@ -126,7 +126,6 @@ public node_data getNode(int key);
 	
 	/**
 	 * returns the data of the edge (src,dest), null if none.
-	 * Note: this method should run in O(1) time.
 	 * @param src
 	 * @param dest
 	 * @return
@@ -135,7 +134,6 @@ public edge_data getEdge(int src, int dest);
 	
 	/**
 	 * adds a new node to the graph with the given node_data.
-	 * Note: this method should run in O(1) time.
 	 * @param n
 	 */
 public void addNode(node_data n);
@@ -152,7 +150,6 @@ public void connect(int src, int dest, double w);
 	/**
 	 * This method returns a pointer (shallow copy) for the
 	 * collection representing all the nodes in the graph. 
-	 * Note: this method should run in O(1) time.
 	 * @return Collection<node_data>
 	 */
 public Collection<node_data> getV();
@@ -177,7 +174,6 @@ public node_data removeNode(int key);
 	
 	/**
 	 * Deletes the edge from the graph,
-	 * Note: this method should run in O(1) time.
 	 * @param src
 	 * @param dest
 	 * @return the data of the removed edge (null if none).
@@ -185,14 +181,12 @@ public node_data removeNode(int key);
 public edge_data removeEdge(int src, int dest);
 	
 	/** Returns the number of vertices (nodes) in the graph.
-	 * Note: this method should run in O(1) time. 
 	 * @return
 	 */
 public int nodeSize();
 	
 	/** 
 	 * Returns the number of edges (assume directional graph).
-	 * Note: this method should run in O(1) time.
 	 * @return
 	 */
 public int edgeSize();
@@ -252,7 +246,6 @@ public double shortestPathDist(int src, int dest);
     /**
      * returns the the shortest path between src to dest - as an ordered List of nodes:
      * src--> n1-->n2-->...dest
-     * see: https://en.wikipedia.org/wiki/Shortest_path_problem
      * Note if no such path --> returns null;
      * @param src - start node
      * @param dest - end (target) node

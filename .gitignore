@@ -1,8 +1,7 @@
 .idea/
 out/
 directional-weighted-graph-DS.iml
-.vscode/settings.json
-.vscode/workspace.code-workspace
+.vscode/
 docs/
 data/g0.json
 src/client.zip
