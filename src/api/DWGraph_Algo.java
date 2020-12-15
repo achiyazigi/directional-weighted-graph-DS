@@ -8,21 +8,41 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     private directed_weighted_graph _g;
 
+    
+    /**
+     * init target graph
+     * @param g
+     */
     @Override
     public void init(directed_weighted_graph g) {
         _g = g;
     }
 
+    
+    /** 
+     * returns the initialized graph
+     * @return directed_weighted_graph
+     */
     @Override
     public directed_weighted_graph getGraph() {
         return _g;
     }
 
+    
+    /** 
+     * @return directed_weighted_graph
+     */
     @Override
     public directed_weighted_graph copy() {
         return new DWGraph_DS(_g);
     }
 
+    
+    /** 
+     * running BFS but each edge u,v we check if there's a path back from v to u
+     * (not necessarily the shortest one)
+     * @return boolean
+     */
     @Override
     public boolean isConnected() {
         if (_g.nodeSize() == 0 || _g.nodeSize() == 1) {
@@ -31,11 +51,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         if (this._g.nodeSize() > this._g.edgeSize() + 1) { //the minimum number of edges for a connected graph, shallow chek.
             return false;
         }
-        if (reset_and_lonely_check()) {//reset all the Tags in the graph to 0 and check if there is a lonely node.
+        if (reset_and_lonely_check()) {//reset all the Tags in the graph to -1 and check if there is a lonely node.
             return false;            // if there is a lonely node return false immediately.
         }
 
-        Queue<node_data> q = new LinkedList<>(); // Queue to store all the checked Nodes.
+        Queue<node_data> q = new LinkedList<>();
         q.add(_g.getV().iterator().next());
         int counter = 0;
         node_data cur = q.peek();
@@ -44,7 +64,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         while (!q.isEmpty()) {
             cur = q.poll();
             counter++;
-            for (edge_data i : _g.getE(cur.getKey())) { //check if V neighbor has been checked.
+            for (edge_data i : _g.getE(cur.getKey())) {
                 node_data dest = _g.getNode(i.getDest());
                 if (dest.getTag() == -1) {
                     if(!path(dest.getKey(),cur.getKey())){
@@ -58,6 +78,14 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return _g.getV().size() == counter;
     }
 
+    
+    /**
+     * returns true iff there's a path from src to dest.
+     * DFS concept implementaion (with stack)
+     * @param src
+     * @param dest
+     * @return boolean
+     */
     public boolean path(int src, int dest) {
         node_data cur = _g.getNode(src);
         Stack<node_data> s = new Stack<>();
@@ -79,14 +107,14 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return false;
     }
 
-/**
- * 1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
- * 2. Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes. Set the initial node as current.
- * 3. For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one. For example, if the current node A is marked with a distance of 6, and the edge connecting it with a neighbour B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
- * 4. When we are done considering all of the unvisited neighbours of the current node, mark the current node as visited and remove it from the unvisited set. A visited node will never be checked again.
- * 5. If the destination node has been marked visited (when planning a route between two specific nodes) or if the smallest tentative distance among the nodes in the unvisited set is infinity (when planning a complete traversal; occurs when there is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
- * 6. Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new "current node", and go back to step 3.
- */
+    /**
+     * 1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
+     * 2. Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes. Set the initial node as current.
+     * 3. For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one. For example, if the current node A is marked with a distance of 6, and the edge connecting it with a neighbour B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
+     * 4. When we are done considering all of the unvisited neighbours of the current node, mark the current node as visited and remove it from the unvisited set. A visited node will never be checked again.
+     * 5. If the destination node has been marked visited (when planning a route between two specific nodes) or if the smallest tentative distance among the nodes in the unvisited set is infinity (when planning a complete traversal; occurs when there is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
+     * 6. Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new "current node", and go back to step 3.
+     */
 
     @Override
     public double shortestPathDist(int src, int dest) {
@@ -97,7 +125,10 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
 			@Override
 			public int compare(node_data o1, node_data o2) {
-				return (int)(o1.getWeight()-o2.getWeight());
+                double delta = o1.getWeight()-o2.getWeight();
+                if(delta > 0) return 1;
+                if(delta < 0) return -1;
+				return 0;
 			}
             
         });
@@ -131,6 +162,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         }
     }
 
+    
+    /** 
+     * reset for isConnected(). it's also checking for lonely nodes in the graph.
+     * @return boolean
+     */
     private boolean reset_and_lonely_check() {
         for (node_data n : _g.getV()) {
             n.setTag(-1);
@@ -141,6 +177,15 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return false;
     }
 
+    
+    /**
+     * backtracking after running shortestPathDist().
+     * each node holdes the key exposed it. so starting from dest,
+     * adding to the head of the list the key stored in node.info() recursively untill reaching src.
+     * @param src
+     * @param dest
+     * @return List<node_data>
+     */
     @Override
     public List<node_data> shortestPath(int src, int dest) {
         if (this.shortestPathDist(src, dest) == -1) {
@@ -156,6 +201,12 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return res;
     }
 
+    
+    /** 
+     * save the graph in a json format using Gson lib.
+     * @param file
+     * @return boolean
+     */
     @Override
     public boolean save(String file) {
 
@@ -174,6 +225,12 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         }
     }
 
+    
+    /** 
+     * loads a graph from json test using Gson lib.
+     * @param file
+     * @return boolean
+     */
     @Override
     public boolean load(String file) {
 

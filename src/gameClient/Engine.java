@@ -1,13 +1,9 @@
 package gameClient;
 
-import Server.Game_Server_Ex2;
-
-import java.util.Scanner;
-
 public class Engine {
 
     public static void main(String[] args) throws InterruptedException {
-//        args = new String[]{"3","3"};
+    //    args = new String[]{"316071349","0"};
         Painter painter = new Painter();
         Thread graphics = new Thread(painter);
         graphics.start();

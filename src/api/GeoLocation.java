@@ -15,21 +15,42 @@ public class GeoLocation implements geo_location {
         this.z = geo.z();
     }
 
+    
+    /** 
+     * get x.
+     * @return double
+     */
     @Override
     public double x() {
         return x;
     }
 
+    
+    /** 
+     * get y.
+     * @return double
+     */
     @Override
     public double y() {
         return y;
     }
 
+    
+    /** 
+     * get z.
+     * @return double
+     */
     @Override
     public double z() {
         return z;
     }
 
+    
+    /** 
+     * compute distance.
+     * @param g
+     * @return double
+     */
     @Override
     public double distance(geo_location g) {
 

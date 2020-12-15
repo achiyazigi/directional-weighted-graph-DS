@@ -20,11 +20,21 @@ public class NodeData implements node_data, Comparable {
         _geo = new GeoLocation(n.getLocation());
     }
 
+    
+    /**
+     * returns the key 
+     * @return int
+     */
     @Override
     public int getKey() {
         return _key;
     }
 
+    
+    /** 
+     * returns the position of the node 
+     * @return geo_location
+     */
     @Override
     public geo_location getLocation() {
         if (_geo != null) {
@@ -33,36 +43,71 @@ public class NodeData implements node_data, Comparable {
         return null;
     }
 
+    
+    /**
+     * set the position of the node.
+     * @param p
+     */
     @Override
     public void setLocation(geo_location p) {
         this._geo = p;
     }
 
+    
+    /** 
+     * get the node's weight.
+     * @return double
+     */
     @Override
     public double getWeight() {
         return _weight;
     }
 
+    
+    /** 
+     * set the node's weight.
+     * @param w
+     */
     @Override
     public void setWeight(double w) {
         _weight = w;
     }
 
+    
+    /** 
+     * get node's matadata
+     * @return String
+     */
     @Override
     public String getInfo() {
         return _info;
     }
 
+    
+    /** 
+     * set node's matadata
+     * @param s
+     */
     @Override
     public void setInfo(String s) {
         _info = s;
     }
 
+    
+    /** 
+     * get the node's tag
+     * @return int
+     */
     @Override
     public int getTag() {
         return _tag;
     }
 
+    
+    /** 
+     * set the node's tag
+     * @param t
+     */
     @Override
     public void setTag(int t) {
         _tag = t;

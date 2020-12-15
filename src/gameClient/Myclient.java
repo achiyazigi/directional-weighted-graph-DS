@@ -21,6 +21,7 @@ public class Myclient implements Runnable {
     private boolean[] open;
     private Painter _painter;
     private long _id;
+    private int _latency = 130;
 
     public Myclient(long id, int level_number, Painter painter) {
         _id = id;
@@ -66,9 +67,11 @@ public class Myclient implements Runnable {
             Arrays.fill(open, true);
             arena.set_pokemons(json_pokemons);
             arena.update_agents(open, json_agents);
-
+            _latency = 130;
             for (Agent agent : arena.get_agents()) {
-
+                if(!agent.isAvailable() && agent.isOnEdge() && agent.get_src() == agent.get_target().get_edge().getSrc()){
+                    _latency = 80;
+                }
                 if (!agent.isOnEdge() && !agent.isAvailable()) {
                     game.chooseNextEdge(agent.get_id(), agent.nextNode().getKey());
                 }
@@ -104,6 +107,11 @@ public class Myclient implements Runnable {
         System.exit(0);
     }
 
+    
+    /** 
+     * initializing the game's graph by saving it and loading back.
+     * @param str_graph
+     */
     private void init_g(String str_graph) {
         ga = new DWGraph_Algo();
 
@@ -126,7 +134,7 @@ public class Myclient implements Runnable {
                     Myclient.arena.move_plus1();
                 }
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(_latency);
                 }
                 catch (InterruptedException e) {
                     e.printStackTrace();

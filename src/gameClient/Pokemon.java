@@ -24,6 +24,12 @@ public class Pokemon {
         
     }
 
+    
+    /** 
+     * using triangle inequality, the algorithm search with BFS for an edge u,v such that dist(u,pos) + dist(pos,v) = dist(u,v)
+     * @param pos
+     * @return edge_data
+     */
     private edge_data findEdge(geo_location pos) {
         for (node_data v : Myclient.g.getV()) {
             int src = v.getKey();
@@ -45,18 +51,38 @@ public class Pokemon {
     }
 
     
+    
+    /** 
+     * get the pokemon's edge.
+     * @return edge_data
+     */
     public edge_data get_edge() {
         return _edge;
     }
     
+    
+    /** 
+     * get the pokemon's value.
+     * @return double
+     */
     public double get_value() {
         return _value;
     }
     
+
+    /**
+     * get the pokemon's position. 
+     * @return Point3D
+     */
     public Point3D get_pos() {
         return _pos;
     }
     
+    
+    /** 
+     * get the pokemon's edge direction. represnted by: 1 from low key to high, -1 from high to low.
+     * @return int
+     */
     public int get_type(){
         return _type;
     }

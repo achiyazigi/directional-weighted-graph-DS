@@ -35,17 +35,36 @@ public class DWGraph_DS implements directed_weighted_graph {
         }
 	}
 
-	@Override
+	
+    /** 
+     * retrieve a node by it's key
+     * (if key doesn't exsist return null)
+     * @param key
+     * @return node_data
+     */
+    @Override
     public node_data getNode(int key) {
         return _v.get(key);
     }
 
+    
+    /** retrieve edge by it's vertex
+     * (if the edge doesn't exsist return null)
+     * @param src
+     * @param dest
+     * @return edge_data
+     */
     @Override
     public edge_data getEdge(int src, int dest) {
         if(!_out.containsKey(src)) {return null;}
         return _out.get(src).get(dest);
     }
 
+    
+    /** 
+     * adding a node to the graph
+     * @param n
+     */
     @Override
     public void addNode(node_data n) {
         int nKey = n.getKey();
@@ -53,6 +72,15 @@ public class DWGraph_DS implements directed_weighted_graph {
 
     }
 
+    
+    /** 
+     * connects between two nodes and updates the weight of the new edge.
+     * the implementation is two maps, one for outgoing edges, and the second for incoming edges.
+     * the second one is being used in removeNode() only.
+     * @param src
+     * @param dest
+     * @param w
+     */
     @Override
     public void connect(int src, int dest, double w) {
         if(src == dest || this.getNode(src) == null || this.getNode(dest) == null){
@@ -73,11 +101,22 @@ public class DWGraph_DS implements directed_weighted_graph {
         _MC++;
     }
 
+    
+    /** 
+     * retrieve a collection of nodes in the graph.
+     * @return Collection<node_data>
+     */
     @Override
     public Collection<node_data> getV() {
         return _v.values();
     }
 
+    
+    /** 
+     * retrieve a collection of outgoing edges from node_id.
+     * @param node_id
+     * @return Collection<edge_data>
+     */
     @Override
     public Collection<edge_data> getE(int node_id) {
         if(this.getNode(node_id) == null)
@@ -87,6 +126,16 @@ public class DWGraph_DS implements directed_weighted_graph {
         return new LinkedList<edge_data>();
     }
 
+    
+    /** 
+     * iteratiing over outgoing neighbors of the node,
+     * removing the edge from their incoming edges
+     * and removing the node key from the outgoing map.
+     * lastly removing the node from the map of the nodes and returning it.
+     * (if  doesnt exsist return null)
+     * @param key
+     * @return node_data
+     */
     @Override
     public node_data removeNode(int key) {
         node_data removed = _v.remove(key);
@@ -105,6 +154,14 @@ public class DWGraph_DS implements directed_weighted_graph {
         return removed;
     }
 
+    
+    /**
+     * remove edge from the graph
+     * (if the edge doesn't exsist return null) 
+     * @param src
+     * @param dest
+     * @return edge_data
+     */
     @Override
     public edge_data removeEdge(int src, int dest) {
         if (!_v.containsKey(src) || !_v.containsKey(dest)){
@@ -119,21 +176,33 @@ public class DWGraph_DS implements directed_weighted_graph {
         return removed;
     }
 
+    
+    /** 
+     * return the ammount of nodes in the graph
+     * @return int
+     */
     @Override
     public int nodeSize() {
         return _v.size();
     }
 
+    
+    /** 
+     * return the ammount of edges in the graph
+     * @return int
+     */
     @Override
     public int edgeSize() {
         return _edges;
     }
 
+    
+    /** 
+     * return the amount of changes made in the graph
+     * @return int
+     */
     @Override
     public int getMC() {
         return _MC;
     }
-
-
-
 }
