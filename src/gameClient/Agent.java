@@ -1,8 +1,6 @@
-package client;
+package gameClient;
 
-import api.DWGraph_Algo;
 import api.GeoLocation;
-import api.dw_graph_algorithms;
 import api.geo_location;
 import api.node_data;
 
@@ -17,6 +15,7 @@ public class Agent {
     private geo_location _pos;
     private boolean _available = true;
     private double _speed;
+    private double _value;
 
     public Agent(int id, Pokemon pokemon) {
         _speed = 1;
@@ -99,5 +98,13 @@ public class Agent {
 
     public void set_speed(double speed) {
         _speed = speed;
+    }
+
+    public double get_value() {
+        return _value;
+    }
+
+    public void set_value(double value) {
+        _value = value;
     }
 }
