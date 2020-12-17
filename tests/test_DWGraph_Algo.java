@@ -477,6 +477,8 @@ public class test_DWGraph_Algo {
         g0.connect(6, 9, 1); //
         g0.connect(7, 9, 4); //
         g0.connect(9, 8, 10); //
+        GeoLocation g = new GeoLocation(4,4,4);
+        g0.getNode(2).setLocation(g);
         dw_graph_algorithms ga = new DWGraph_Algo();
         ga.init(g0);
         File directory = new File(System.getProperty("user.dir") + "\\out");
