@@ -1,17 +1,17 @@
 Ex2 Readme.
-**********************************_Introduction_**********************************
+**_Introduction_**
 @auther Ravid Saadia & Achiya Zigler
-@ID: 308212570
+
 
 
 In this project we will implement the interfaces.
-There are six classes which we will use in order to implement the interfaces.
+There are five classes which we will use in order to implement the interfaces.
 (We will elaborate each class by it's section)
 
 
-**********************************_functions implements_**********************************”
+**_functions implementations_**
 
-*********_NodeData class function:_*********
+**_NodeData class function:_**
 
 The first class is called "NodeData Class".
 This class represents the individual Vertex in a (directional) weighted graph,
@@ -90,7 +90,7 @@ public int getTag();
 public void setTag(int t);
 
 
-*************************DWGraph_DS classs function:_************************
+**_DWGraph_DS classs function:_**
 
 
 The second class is called "DWGraph_DS Class".
@@ -199,7 +199,7 @@ public int getMC();
 
 
 
-********************DWGraph_Algo class function:_********************
+**_DWGraph_Algo class function:_**
 
 The third class is called "DWGraph_Algo Class".
 This class executes algorithmic operations on graphs which were created by "DWGraphs_DS".
@@ -271,7 +271,7 @@ public boolean save(String file);
      */
 public boolean load(String file);
 
-******************** GeoLocation class function: ********************
+**_GeoLocation class function:_**
 
 The fourth class is called "GeoLocation Class".
 This class represents a geo location <x,y,z>, aka Point3D
@@ -306,7 +306,7 @@ public double z();
 public double distance(geo_location g);
 
  
-******************** EdgeData class function: ********************
+**_EdgeData class function:_**
 The fifth class is called "EdgeData Class".
 
 
