@@ -1,7 +1,7 @@
 Ex2 Readme.
 **_Introduction_**
 @auther Ravid Saadia & Achiya Zigler
-@ID : 205544851 , 316071349.
+
 
 
 In this project we will implement the interfaces.
