@@ -5,11 +5,9 @@ import java.util.Scanner;
 public class Engine {
 
     public static void main(String[] args) throws InterruptedException {
-    //    args = new String[]{"316071349","0"};
         Scanner sc= new Scanner(System.in);
-        if(args.length == 0){
+        while(args.length == 0){
             System.out.println("enter id and level: ");
-            args = new String[2];
             args = sc.nextLine().split(" ");
         }
         Painter painter = new Painter();
