@@ -50,19 +50,19 @@ public class Myclient implements Runnable {
 
         System.out.println("game started = " + game.isRunning() + ", ends in: " + (game.timeToEnd() / 1000) + "\'s");
 
-        Move mover = new Move();
-        Thread move = new Thread(mover);
-        move.start();
+        // Move mover = new Move();
+        // Thread move = new Thread(mover);
+        // move.start();
 
         
         Gson gson = new Gson();
         JsonObject  json_agents;
         JsonObject json_pokemons;
         while (game.isRunning()) {
-            synchronized(mover){
+            // synchronized(mover){
                 json_pokemons = gson.fromJson(game.getPokemons(), JsonObject.class);
                 json_agents = gson.fromJson(game.getAgents(), JsonObject.class);
-            }
+            // }
             open = new boolean[arena.get_pokemons().size()];
             Arrays.fill(open, true);
             arena.set_pokemons(json_pokemons);
@@ -99,7 +99,7 @@ public class Myclient implements Runnable {
                 }
 
             }
-
+            game.move();
             arena.setScore(gson.fromJson(game.toString(), JsonObject.class).getAsJsonObject("GameServer")
                     .getAsJsonObject().get("grade").getAsInt());
         }
@@ -125,22 +125,22 @@ public class Myclient implements Runnable {
         g = ga.getGraph();
     }
 
-    private class Move implements Runnable {
+    // private class Move implements Runnable {
 
-        public void run() {
-            while (Myclient.game.isRunning()) {
-                synchronized(this){
-                    Myclient.game.move();
-                    Myclient.arena.move_plus1();
-                }
-                try {
-                    Thread.sleep(_latency);
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    //     public void run() {
+    //         while (Myclient.game.isRunning()) {
+    //             // synchronized(this){
+    //                 Myclient.game.move();
+    //                 Myclient.arena.move_plus1();
+    //             // }
+    //             // try {
+    //             //     Thread.sleep(_latency);
+    //             // }
+    //             // catch (InterruptedException e) {
+    //             //     e.printStackTrace();
+    //             // }
+    //         }
+    //     }
 
-    }
+    // }
 }

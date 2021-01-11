@@ -677,4 +677,21 @@ public class test_DWGraph_Algo {
         assertEquals(g0, ga.getGraph());
     }
 
+    @Test
+
+    public void SCCs(){
+        directed_weighted_graph g0 = graph_creator(3, 3, 0);
+        System.out.println(g0.getV());
+        g0.addNode(new NodeData(3));
+        g0.connect(0, 3, 0);
+        g0.connect(3, 2, 0);
+        dw_graph_algorithms ga = new DWGraph_Algo();
+        ga.init(g0);
+        ga.load("D:/studies/2020-2021/winter/ObjectOrientedProgramming/Ex3/data/1000000_nodes.json");
+        long t = System.currentTimeMillis();
+        System.out.println(ga.SCCs().size());
+        t = System.currentTimeMillis() - t;
+        System.out.println("SCCs after: " + t/1000 + "s'");
+
+    }
 }

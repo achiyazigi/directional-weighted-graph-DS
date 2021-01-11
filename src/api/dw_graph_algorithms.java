@@ -1,4 +1,6 @@
 package api;
+
+import java.util.LinkedList;
 import java.util.List;
 /**
  * This interface represents a Directed (positive) Weighted Graph Theory Algorithms including:
@@ -72,4 +74,5 @@ public interface dw_graph_algorithms {
      * @return true - iff the graph was successfully loaded.
      */
     public boolean load(String file);
+    public LinkedList<LinkedList<Integer>> SCCs();
 }

@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.hamcrest.core.IsInstanceOf;
+
 import java.io.*;
 import java.util.*;
 
@@ -269,6 +271,101 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * dfs
+     * transpose
+     * dfs by order
+     * @return
+     */
+    @Override
+    public LinkedList<LinkedList<Integer>> SCCs(){
+        LinkedList<LinkedList<Integer>> res = new LinkedList<LinkedList<Integer>>();
+        LinkedList<Integer> nodes = convert(_g.getV());
+        LinkedList<Integer> finishing = this.dfs(nodes, res);
+        directed_weighted_graph g0 = this.traspose();
+        directed_weighted_graph temp = _g;
+        _g = g0;
+        res.clear();
+        LinkedList<Integer> finishing2 = this.dfs(finishing, res);
+        _g = temp;
+        return res;
+    }
+
+    private LinkedList<Integer> convert(Collection<node_data> v) {
+        LinkedList<Integer> res = new LinkedList<>();
+        for (node_data n : v) {
+            res.add(n.getKey());
+        }
+        return res;
+    }
+
+    /**
+     * 
+     * 1. for each vertex u ∈ V[G] 2. do color[u] ← white (0) 3. π[u] ← NULL (-1) 4.
+     * time ← 0 5. for each vertex u ∈ V[G] 6. do if color[u] = white 7. then
+     * DFS-Visit(u)
+     * 
+     * @param v
+     * @param res
+     * @return
+     */
+    private LinkedList<Integer> dfs(LinkedList<Integer> nodes, LinkedList<LinkedList<Integer>> res) {
+        LinkedList<Integer> fin_list = new LinkedList<>();
+
+        for (int k : nodes) {
+            node_data n = _g.getNode(k);
+            n.setTag(0);
+        }
+
+        while(!nodes.isEmpty()) {
+            int k = nodes.pollLast();
+            node_data n = _g.getNode(k);
+            if(n.getTag() == 0){
+                this.dfs_visit(n, res, fin_list);
+            }
+        }
+        return fin_list;
+    }
+
+    private void dfs_visit(node_data n, LinkedList<LinkedList<Integer>> res, LinkedList<Integer> fin_list) {
+            Stack<node_data> nodes = new Stack<>();
+            LinkedList<Integer> comp = new LinkedList<>();
+            nodes.push(n);
+            while(!nodes.isEmpty()){
+                node_data cur = nodes.peek();
+
+                if(cur.getTag() == 1){
+                    fin_list.add(cur.getKey());
+                    nodes.pop().setTag(2);
+                    continue;
+                }
+
+                cur.setTag(1);
+                comp.add(cur.getKey());
+                for (edge_data e: _g.getE(cur.getKey())) {
+                    node_data ni = _g.getNode(e.getDest());
+                    if(ni.getTag() == 0){
+                        nodes.push(ni);
+                    }
+                }
+            }
+            res.add(comp);
+
+    }
+
+    private directed_weighted_graph traspose() {
+        directed_weighted_graph g0 = new DWGraph_DS();
+        for (node_data s: _g.getV()) {
+            g0.addNode(new NodeData(s.getKey()));
+            for (edge_data e : _g.getE(s.getKey())) {
+                int d = e.getDest();
+                g0.addNode(new NodeData(d));
+                g0.connect(d, s.getKey(), e.getWeight());
+            }
+        }
+        return g0; 
     }
 
 }
